@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>user</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"></link>
+</head>
+<script type="text/javascript">js代码</script>
+<body class="container">
+<br/>
+<h2>坐标转换</h2>
+<br/>
+<div class="with:60%">
+    <!--    <div style="margin: 10px 90px;">没有账户？先去<a  th:href="@{/toRegister}">注册</a></div>-->
+<!--    <form class="form-horizontal" th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label class="col-sm-1 control-label">坐标系</label>
+            <div class="col-sm-6">
+                <input type="radio" name="火星坐标"/>火星坐标GCJ-02
+                <input type="radio" name="火星坐标"/>国际坐标WGS-84
+                <input type="radio" name="火星坐标"/>百度坐标BD-09
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">坐&nbsp;&nbsp;&nbsp;&nbsp;标</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="loginName" id="cord" placeholder=""/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-1 col-sm-6">
+                <input type="button" value="坐标转换" class="btn btn-info"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">火星坐标(GCJ-02)</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="loginName" id="cord1" placeholder=""/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">国际坐标(WGS-84)</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="loginName" id="cord2" placeholder=""/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-1 control-label">百度坐标(BD-09)</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="loginName" id="cord3" placeholder=""/>
+            </div>
+        </div>
+    </form>-->
+    <br/>
+    <form class="form-horizontal" th:action="@{/import}" method="post" enctype="multipart/form-data" onsubmit="return toValid()">
+        <input id="file" type="file" name="file"/><br/><br/>
+        <div class="col-sm-6">
+            <input type="submit" value="Excel坐标提交" class="btn btn-info"/>
+        </div>
+    </form>
+    <iframe name="form" id="form" style="display:none"></iframe>
+    <div class="col-sm-6">
+        <button onclick="download()" class="btn btn-info">下载转换后的数据</button>
+    </div>
+</div>
+</body>
+<script>
+    ${document}.ready(function () {
+        
+    })
+
+    function toValid() {
+        var file_obj = document.getElementById('file').files[0];
+        if(file_obj==null){
+            alert("请提交正确excel文件");
+            return false;
+        }
+        var name = file_obj.name;
+        if(name.match(".xlsx")==null){
+            alert("请提交正确excel文件");
+            return false;
+        }
+    }
+    function download() {
+        window.open('/export');
+    }
+</script>
+</html>
