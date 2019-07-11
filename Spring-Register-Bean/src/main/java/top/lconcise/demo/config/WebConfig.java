@@ -1,21 +1,23 @@
-package lconcise.top.demo.config;
+package top.lconcise.demo.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata;
+import org.springframework.context.annotation.*;
+import top.lconcise.demo.domain.User;
 
 /**
- * Created by liusj on 2019/7/1
+ * Created by liusj on 2019/7/11
+ * <p>
  */
 @Configuration
-@ComponentScan(value = "lconcise.top.demo",
-        excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = {Controller.class, Repository.class})})
+@ComponentScan("top.lconcise.demo")
 public class WebConfig {
 
-//    @Bean("myUser")
-//    public User user() {
-//        return new User("张小龙", "123456");
-//    }
+    @Bean("myUser")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Lazy
+    public User user() {
+        System.out.println("往ioc 容器中注册 user bean ");
+        return new User("张小龙", 18);
+    }
 }
