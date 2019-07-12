@@ -1,0 +1,11 @@
+# Initializers
+org.springframework.context.ApplicationContextInitializer=\
+top.lconcise.config.HelloApplicationContextInitializer,\
+top.lconcise.config.AfterHelloApplicationContextInitializer
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+top.lconcise.listener.ContextClosedEventListener,\
+top.lconcise.listener.AfterContextClosedEventListener
+# Run Listeners
+org.springframework.boot.SpringApplicationRunListener=\
+top.lconcise.listener.HelloApplicationRunListener
