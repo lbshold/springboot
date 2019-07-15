@@ -1,11 +1,12 @@
 package top.lconcise;
 
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@SpringBootApplication
+//@SpringBootApplication
 public class Application {
 
     public static void main(String[] args) {
@@ -23,17 +24,20 @@ public class Application {
 //                .profiles("dev")
 //                .run(args);
 
-//        SpringApplication application = new SpringApplication(ApplicationResource.class);
+//        SpringApplication application = new SpringApplication(Application.class);
 //        application.run(args);
 
-        new SpringApplicationBuilder(Application.class)
-                .web(WebApplicationType.NONE)
-                .run(args);
+       SpringApplication application = new SpringApplication(ApplicationResource.class);
+        application.run(args);
+
+//        new SpringApplicationBuilder(Application.class)
+//                .web(WebApplicationType.NONE)
+//                .run(args);
 }
 
-//    @SpringBootApplication
-//    public static class ApplicationResource {
-//
-//    }
+    @SpringBootApplication
+    public static class ApplicationResource {
+
+    }
 
 }
