@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import top.lconcise.security.handler.MyAuthenticationFailureHandler;
 import top.lconcise.security.handler.MyAuthenticationSuccessHandler;
+import top.lconcise.security.smscode.SmsAuthenticationConfig;
+import top.lconcise.security.smscode.SmsCodeFilter;
 import top.lconcise.security.validate.code.ValidateCodeFilter;
 
 /**
@@ -24,6 +26,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private MyAuthenticationFailureHandler authenticationFailureHandler;
     @Autowired
     private ValidateCodeFilter validateCodeFilter;
+    @Autowired
+    private SmsCodeFilter smsCodeFilter;
+    @Autowired
+    private SmsAuthenticationConfig smsAuthenticationConfig;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,19 +38,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) //添加验证码效验过滤器
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+                .addFilterBefore(smsCodeFilter, UsernamePasswordAuthenticationFilter.class)  // 添加短信验证码校验过滤器
                 .formLogin() // 表单登录
                 .loginPage("/login.html")       // 登录跳转url
 //                .loginPage("/authentication/require")
                 .loginProcessingUrl("/login")   // 处理表单登录url
-//                .successHandler(authenticationSuccessHandler)
+                .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
                 .and()
                 .authorizeRequests()            // 授权配置
-                .antMatchers("/login.html", "/css/**", "/authentication/require", "/code/image").permitAll()  // 无需认证
+                .antMatchers("/login.html", "/css/**", "/authentication/require", "/code/image","/code/sms").permitAll()  // 无需认证
                 .anyRequest()                   // 所有请求
                 .authenticated()                // 都需要认证
-                .and().csrf().disable();
+                .and().csrf().disable()
+                .apply(smsAuthenticationConfig);
 
     }
 }

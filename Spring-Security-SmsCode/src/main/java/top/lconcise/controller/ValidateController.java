@@ -37,9 +37,9 @@ public class ValidateController {
     }
 
     @GetMapping("/code/sms")
-    public void createSmsCode(HttpServletRequest request) {
+    public void createSmsCode(HttpServletRequest request, String mobile) {
         SmsCode smsCode = createSMSCode();
-        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY_IMAGE_CODE, smsCode);
+        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY_SMS_CODE + mobile, smsCode);
 
         log.info("登录验证为：" + smsCode.getCode());
     }
