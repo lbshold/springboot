@@ -36,5 +36,4 @@ public class SmsAuthenticationToken extends AbstractAuthenticationToken {
         return this.principal;
     }
 
-
 }

@@ -52,7 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()                   // 所有请求
                 .authenticated()                // 都需要认证
                 .and().csrf().disable()
-                .apply(smsAuthenticationConfig);
-
+                .apply(smsAuthenticationConfig); // 将短信验证码认证配置加到 Spring Security 中
     }
 }
