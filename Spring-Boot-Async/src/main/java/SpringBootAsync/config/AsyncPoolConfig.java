@@ -1,8 +1,10 @@
 package SpringBootAsync.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by liusj on 2019/8/6
@@ -10,7 +12,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Configuration
 public class AsyncPoolConfig {
 
-    public ThreadPoolTaskScheduler asyncThreadPoolTaskExecutor() {
+    @Bean
+    public ThreadPoolTaskExecutor asyncThreadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(20);
         executor.setMaxPoolSize(200);
@@ -20,6 +23,9 @@ public class AsyncPoolConfig {
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
 
-//        executor.setRejectedExecutionHandler(new Threadpoo);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+
+        executor.initialize();
+        return executor;
     }
 }

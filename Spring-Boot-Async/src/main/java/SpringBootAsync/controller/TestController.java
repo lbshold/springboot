@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 /**
  * Created by liusj on 2019/8/6
  */
@@ -42,5 +45,21 @@ public class TestController {
 
         long end = System.currentTimeMillis();
         logger.info("总耗时：{}ms", end - start);
+    }
+
+    @GetMapping("/async2")
+    public String testAsync2() throws ExecutionException, InterruptedException {
+        long start = System.currentTimeMillis();
+        logger.info("异步方法开始");
+
+        Future<String> stringFuture = testService.asyncMethod2();
+        logger.info("异步方法返回值：" + stringFuture.get());
+
+        logger.info("异步方法结束");
+
+        long end = System.currentTimeMillis();
+        logger.info("总耗时：{}ms", end - start);
+
+        return stringFuture.get();
     }
 }
