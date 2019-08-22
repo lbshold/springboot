@@ -1,0 +1,18 @@
+server:
+  port: 9090
+
+spring:
+  profiles:
+    active: dev
+---
+#development environment
+spring:
+  profiles: dev
+
+test_name: dev_testName
+---
+#production environment
+spring:
+  profiles: pro
+
+test_name: pro_testName
