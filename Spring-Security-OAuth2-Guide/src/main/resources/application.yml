@@ -1,4 +1,10 @@
 server:
   port: 9090
 
+security:
+  oauth2:
+    client:
+      client-id: test
+      client-secret: test1234
+      registered-redirect-uri: https://www.baidu.com
 # http://localhost:9090/oauth/token?grant_type=authorization_code&code=3LOWt6&client_id=test&redirect_uri=https://www.baidu.com&scope=all
