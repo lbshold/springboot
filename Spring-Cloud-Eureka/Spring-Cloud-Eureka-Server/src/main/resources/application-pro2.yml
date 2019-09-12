@@ -1,0 +1,15 @@
+server:
+  port: 7070
+
+spring:
+  application:
+    name: Eureka-Server
+
+eureka:
+  instance:
+    hostname: pro2
+  client:
+    service-url:
+      defaultZone: http://user:123456@pro2:9090/eureka/
+  server:
+    enable-self-preservation: false

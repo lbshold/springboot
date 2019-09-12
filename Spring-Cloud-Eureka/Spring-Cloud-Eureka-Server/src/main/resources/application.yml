@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: pro1
+
+  security:
+    user:
+      name: user
+      password: 123456

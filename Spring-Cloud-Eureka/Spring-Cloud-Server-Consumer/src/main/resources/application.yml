@@ -1,0 +1,9 @@
+server:
+  port: 8989
+spring:
+  application:
+    name: Server-Consumer
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:123456@pro1:9090/eureka/,http://user:123456@pro2:7070/eureka/
