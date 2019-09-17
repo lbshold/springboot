@@ -18,15 +18,15 @@ import top.lconcise.security.MyAuthenticationSuccessHandler;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private MyAuthenticationSuccessHandler authenticationSuccessHandler;
-    @Autowired
-    private MyAuthenticationFailureHandler authenticationFailureHandler;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+//    @Autowired
+//    private MyAuthenticationSuccessHandler authenticationSuccessHandler;
+//    @Autowired
+//    private MyAuthenticationFailureHandler authenticationFailureHandler;
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -35,20 +35,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin() // 表单登录
-                .loginPage("/login.html")       // 登录跳转url
-//                .loginPage("/authentication/require")
-                .loginProcessingUrl("/login")   // 处理表单登录url
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
-                .and()
-                .authorizeRequests()            // 授权配置
-                .antMatchers("/login.html", "/css/**", "/authentication/require").permitAll()  // 无需认证
-                .anyRequest()                   // 所有请求
-                .authenticated()                // 都需要认证
-                .and().csrf().disable();
-
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.formLogin() // 表单登录
+//                .loginPage("/login.html")       // 登录跳转url
+////                .loginPage("/authentication/require")
+//                .loginProcessingUrl("/login")   // 处理表单登录url
+//                .successHandler(authenticationSuccessHandler)
+//                .failureHandler(authenticationFailureHandler)
+//                .and()
+//                .authorizeRequests()            // 授权配置
+//                .antMatchers("/login.html", "/css/**", "/authentication/require").permitAll()  // 无需认证
+//                .anyRequest()                   // 所有请求
+//                .authenticated()                // 都需要认证
+//                .and().csrf().disable();
+//
+//    }
 }
