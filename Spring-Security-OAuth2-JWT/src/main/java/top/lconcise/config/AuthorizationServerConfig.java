@@ -55,6 +55,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         clients.inMemory()
                 .withClient("test1")
                 .secret(new BCryptPasswordEncoder().encode("test1111"))
+                .authorizedGrantTypes("password","refresh_token")
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(864000)
                 .scopes("all", "a", "b", "c")
