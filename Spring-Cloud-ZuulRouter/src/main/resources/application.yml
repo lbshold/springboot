@@ -1,0 +1,18 @@
+
+spring:
+  application:
+    name: Zuul-Gateway
+server:
+  port: 12580
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:123456@pro1:9091/eureka/,http://user:123456@pro2:9092/eureka/
+
+zuul:
+  routes:
+    server-provider:
+      path: /api-b/**
+    server-consumer:
+      path: /api-c/**
+
