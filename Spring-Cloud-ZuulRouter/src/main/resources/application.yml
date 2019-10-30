@@ -15,4 +15,8 @@ zuul:
       path: /api-b/**
     server-consumer:
       path: /api-c/**
+    api-e:
+      path: /api-e/**
+      url: forward:/test
+
 
