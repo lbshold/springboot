@@ -1,0 +1,26 @@
+server:
+  port: 9090
+
+spring:
+  mqtt:
+    client:
+      id: mqttId
+    default:
+      topic: WIMP/kashi
+    topic:
+      icreader: deviceMsg/yinhanjiwei
+      wictr: WICtr/kashi
+      wictr_heartbeat: WICtr/kashi/heartbeat
+    #MQTT-用户名
+    username: admin
+    #MQTT-密码
+    password: password
+    #MQTT-服务器连接地址，如果有多个，用逗号隔开，如：tcp://127.0.0.1:61613，tcp://192.168.2.133:61613
+    url: tcp://182.92.73.149:61883
+    #atleast once
+    qos: 0
+    #second
+    keepaliveinterval: 60
+  main:
+    allow-bean-definition-overriding: true
+
