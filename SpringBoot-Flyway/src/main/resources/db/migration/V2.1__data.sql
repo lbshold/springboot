@@ -1,5 +1,3 @@
-DELETE FROM user;
-
 INSERT INTO user (id, name, age, email) VALUES
 (1, 'Jone', 18, 'test1@baomidou.com'),
 (2, 'Jack', 20, 'test2@baomidou.com'),
