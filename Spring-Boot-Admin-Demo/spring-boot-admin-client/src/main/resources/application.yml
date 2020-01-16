@@ -22,5 +22,5 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
-
+logging:
+  file: log/all.log
