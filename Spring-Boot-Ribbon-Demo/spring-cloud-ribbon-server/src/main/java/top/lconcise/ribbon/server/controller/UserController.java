@@ -1,5 +1,7 @@
 package top.lconcise.ribbon.server.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -26,5 +30,12 @@ public class UserController {
         User user = userService.getUserById(id);
         user.setRemark(url);
         return user;
+    }
+
+    @GetMapping("/hello")
+    public String hello(HttpServletRequest request) {
+        LOGGER.info(request.getRequestURL().toString());
+
+        return "Hello Spring-Cloud-Feign-Client";
     }
 }
