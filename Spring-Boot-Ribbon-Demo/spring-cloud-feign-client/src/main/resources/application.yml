@@ -1,0 +1,25 @@
+server:
+  port: 8771
+spring:
+  application:
+    name: spring-cloud-feign-client
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+feign:
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+logging:
+  level:
+    top:
+      lconcise:
+        feign:
+          client:
+            service: debug
