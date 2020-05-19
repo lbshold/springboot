@@ -1,2 +1,11 @@
 server:
-  port: 7878
+  port: 8787
+
+# 备份数据的相关信息
+project:
+  ip: 127.0.0.1
+  port: 3306
+  username: root
+  password: root
+  database: operation
+  location: E:\operation_backup\
