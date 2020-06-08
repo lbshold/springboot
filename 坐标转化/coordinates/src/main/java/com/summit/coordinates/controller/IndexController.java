@@ -4,17 +4,21 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.google.common.base.Strings;
 import com.summit.coordinates.common.ExcelListener;
 import com.summit.coordinates.common.MyCoordinate;
 import com.summit.coordinates.util.CoordinateConvertUtils;
 import com.summit.coordinates.util.CoordinateFormatUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +31,9 @@ import java.util.regex.Pattern;
 /**
  * Created by liusj on 2019/5/24
  */
-//@Controller
+@Slf4j
+@Api(value = "Excel批量转换坐标", tags = "Excel批量转换坐标")
+@RestController("/batch")
 public class IndexController {
 
     private static final String REGEX = "^\\d+" + "°" + "\\d+" + "′" + "\\d*\\.?\\d*" + "″";
@@ -37,14 +43,12 @@ public class IndexController {
     @Autowired
     private CacheManager cacheManager;
 
-    @GetMapping("/")
+    //    @GetMapping("/")
     public String index() {
         return "index";
     }
 
-    /**
-     * 导出excel.
-     */
+    @ApiOperation("转换后的坐标Excel导出 (复制请求链接浏览器访问下载)")
     @GetMapping("/export")
     public void downLoad(HttpServletResponse response) throws Exception {
         Cache cache = cacheManager.getCache("file");
@@ -60,7 +64,7 @@ public class IndexController {
                 ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
                 Sheet sheet1 = new Sheet(1, 0, MyCoordinate.class);
 
-                sheet1.setSheetName("火星坐标");
+                sheet1.setSheetName("转换后的火星坐标");
                 writer.write(result, sheet1);
                 writer.finish();
             } catch (Exception e) {
@@ -70,11 +74,9 @@ public class IndexController {
         cache.clear();
     }
 
-    /**
-     * excel 导入.
-     */
+    @ApiOperation("Excel批量导入坐标")
     @PostMapping("/import")
-    public void importExcel(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws Exception {
+    public void importExcel(@RequestParam("file") MultipartFile file) throws Exception {
         // 清缓存
         Cache cache = cacheManager.getCache("file");
         cache.clear();
@@ -82,7 +84,7 @@ public class IndexController {
         // 解析每行结果在listener中处理
         ExcelListener listener = new ExcelListener();
         ExcelReader excelReader = new ExcelReader(file.getInputStream(), ExcelTypeEnum.XLSX, null, listener);
-        excelReader.read(new Sheet(1, 1, MyCoordinate.class));
+        excelReader.read(new Sheet(1, 2, MyCoordinate.class));
 
         List<MyCoordinate> datas = listener.getDatas();
 
@@ -92,31 +94,38 @@ public class IndexController {
         Pattern pattern3 = Pattern.compile(REGEX3);
 
         List<MyCoordinate> result = new ArrayList<>();
-        datas.forEach(myCoordinate -> {
-            if (!Strings.isNullOrEmpty(myCoordinate.getLatitude())) {
-                if (pattern.matcher(myCoordinate.getLatitude().trim()).find() && pattern2.matcher(myCoordinate.getLongitude().trim()).find()) {
-                    myCoordinate.setLongitude(CoordinateFormatUtils.DmsTurnDD(myCoordinate.getLongitude()));
-                    myCoordinate.setLatitude(CoordinateFormatUtils.DmsTurnDD(myCoordinate.getLatitude()));
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
-                } else if (pattern2.matcher(myCoordinate.getLatitude().trim()).find() && pattern2.matcher(myCoordinate.getLongitude().trim()).find()) {
-                    myCoordinate.setLongitude(CoordinateFormatUtils.DmTurnDD(myCoordinate.getLongitude()));
-                    myCoordinate.setLatitude(CoordinateFormatUtils.DmTurnDD(myCoordinate.getLatitude()));
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
-                } else if (pattern3.matcher(myCoordinate.getLatitude().trim()).find() && pattern3.matcher(myCoordinate.getLongitude().trim()).find()) {
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
-                } else {
-                    System.out.println(myCoordinate);
-                    MyCoordinate newObj = new MyCoordinate();
-                    newObj.setLatitude("数据格式有误");
-                    newObj.setLongitude("数据格式有误");
-                    result.add(newObj);
-                }
-            } else {
+        String lat;
+        String lng;
+        for (MyCoordinate myCoordinate : datas) {
+
+            lat = myCoordinate.getLatitude().trim();
+            lng = myCoordinate.getLongitude().trim();
+
+            if (StringUtils.isEmpty(lat) || StringUtils.isEmpty(lng)) {
+                myCoordinate.setRemark("数据不能为空");
                 result.add(myCoordinate);
+                continue;
             }
-        });
+            if (pattern.matcher(lat).find() && pattern2.matcher(lng).find()) {
+                myCoordinate.setLongitude(CoordinateFormatUtils.DmsTurnDD(lat));
+                myCoordinate.setLatitude(CoordinateFormatUtils.DmsTurnDD(lng));
+                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                continue;
+            }
+            if (pattern2.matcher(lat).find() && pattern2.matcher(lng).find()) {
+                myCoordinate.setLongitude(CoordinateFormatUtils.DmTurnDD(lat));
+                myCoordinate.setLatitude(CoordinateFormatUtils.DmTurnDD(lng));
+                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                continue;
+            }
+            if (pattern3.matcher(lat).find() && pattern3.matcher(lng).find()) {
+                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                continue;
+            }
+            myCoordinate.setRemark("数据格式有误");
+            result.add(myCoordinate);
+        }
         //  写入緩存
         cache.put("result", result);
-//        return "index";
     }
 }
