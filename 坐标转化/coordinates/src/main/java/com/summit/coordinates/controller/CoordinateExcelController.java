@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Api(value = "Excel批量转换坐标", tags = "Excel批量转换坐标")
 @RestController("/batch")
-public class IndexController {
+public class CoordinateExcelController {
 
     private static final String REGEX = "^\\d+" + "°" + "\\d+" + "′" + "\\d*\\.?\\d*" + "″";
     private static final String REGEX2 = "^\\d+" + "°" + "\\d*\\.?\\d*" + "′";
@@ -45,9 +46,9 @@ public class IndexController {
     private CacheManager cacheManager;
 
     //    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
+//    public String index() {
+//        return "index";
+//    }
 
     @ApiOperation(value = "转换后的坐标Excel导出",
             notes = "Excel批量导入坐标后，复制该请求链接浏览器访问下载Excel(转换后的坐标)，转换失败Excel会有相应提示")
@@ -59,18 +60,17 @@ public class IndexController {
             List<MyCoordinate> result = (List<MyCoordinate>) cacheValue.get();
             //  写入excel
             response.setCharacterEncoding("UTF-8");
-            String name = URLEncoder.encode("火星坐标.xlsx", "UTF-8");
+            String name = URLEncoder.encode("Gcj02坐标.xlsx", "UTF-8");
             response.setContentType("application/x-msdownload");
             response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
             try (OutputStream out = response.getOutputStream()) {
                 ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
                 Sheet sheet1 = new Sheet(1, 0, MyCoordinate.class);
-
-                sheet1.setSheetName("转换后的火星坐标");
+                sheet1.setSheetName("转换后的Gcj02坐标");
                 writer.write(result, sheet1);
                 writer.finish();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
         cache.clear();
@@ -83,15 +83,47 @@ public class IndexController {
         // 清缓存
         Cache cache = cacheManager.getCache("file");
         cache.clear();
+        // 数据处理
+        List<MyCoordinate> result = convertCoordinate(file);
+        //  写入緩存
+        cache.put("result", result);
+    }
 
-        // 解析每行结果在listener中处理
+    @ApiOperation("Excel导入模板下载")
+    @GetMapping("/template")
+    public void template(HttpServletResponse response) throws Exception {
+        List<MyCoordinate> result = new ArrayList<>();
+        response.setCharacterEncoding("UTF-8");
+        String name = URLEncoder.encode("坐标转换模板.xlsx", "UTF-8");
+        response.setContentType("application/x-msdownload");
+        response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
+        try (OutputStream out = response.getOutputStream()) {
+            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
+            Sheet sheet1 = new Sheet(1, 0, MyCoordinate2.class);
+
+            sheet1.setSheetName("坐标转换模板");
+            writer.write(result, sheet1);
+            writer.finish();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 1, 读取Excel中的坐标数据
+     * 2. 遍历坐标数据，
+     *          a. 坐标数据格式转换,度分秒、度分转度
+     *          b. 坐标数据经纬度格式转换，WGS84转GCJ02
+     */
+    private List<MyCoordinate> convertCoordinate(@RequestParam("file") MultipartFile file) throws IOException {
+
+        // 读取Excel中的坐标数据
         ExcelListener listener = new ExcelListener();
         ExcelReader excelReader = new ExcelReader(file.getInputStream(), ExcelTypeEnum.XLSX, null, listener);
         excelReader.read(new Sheet(1, 2, MyCoordinate.class));
 
         List<MyCoordinate> datas = listener.getDatas();
 
-        // 数据转化
         Pattern pattern = Pattern.compile(REGEX);
         Pattern pattern2 = Pattern.compile(REGEX2);
         Pattern pattern3 = Pattern.compile(REGEX3);
@@ -99,6 +131,7 @@ public class IndexController {
         List<MyCoordinate> result = new ArrayList<>();
         String lat;
         String lng;
+        // 遍历坐标数据
         for (MyCoordinate myCoordinate : datas) {
 
             lat = myCoordinate.getLatitude().trim();
@@ -130,28 +163,6 @@ public class IndexController {
             myCoordinate.setRemark("数据格式有误");
             result.add(myCoordinate);
         }
-        //  写入緩存
-        cache.put("result", result);
-    }
-
-    @ApiOperation("Excel导入模板下载")
-    @GetMapping("/template")
-    public void template(HttpServletResponse response) throws Exception {
-
-        List<MyCoordinate> result = new ArrayList<>();
-        response.setCharacterEncoding("UTF-8");
-        String name = URLEncoder.encode("坐标转换模板.xlsx", "UTF-8");
-        response.setContentType("application/x-msdownload");
-        response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
-        try (OutputStream out = response.getOutputStream()) {
-            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
-            Sheet sheet1 = new Sheet(1, 0, MyCoordinate2.class);
-
-            sheet1.setSheetName("坐标转换模板");
-            writer.write(result, sheet1);
-            writer.finish();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return result;
     }
 }
