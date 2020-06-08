@@ -1,6 +1,6 @@
 package com.summit.coordinates.util;
 
-import com.summit.coordinates.common.MyCoordinate;
+import com.summit.coordinates.entity.MyCoordinate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

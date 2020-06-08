@@ -1,7 +1,8 @@
-package com.summit.coordinates.common;
+package com.summit.coordinates.config;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.summit.coordinates.entity.MyCoordinate;
 
 import java.util.ArrayList;
 import java.util.List;

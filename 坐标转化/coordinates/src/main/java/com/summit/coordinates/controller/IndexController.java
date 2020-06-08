@@ -4,8 +4,9 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.summit.coordinates.common.ExcelListener;
-import com.summit.coordinates.common.MyCoordinate;
+import com.summit.coordinates.config.ExcelListener;
+import com.summit.coordinates.entity.MyCoordinate;
+import com.summit.coordinates.entity.MyCoordinate2;
 import com.summit.coordinates.util.CoordinateConvertUtils;
 import com.summit.coordinates.util.CoordinateFormatUtils;
 import io.swagger.annotations.Api;
@@ -48,7 +49,8 @@ public class IndexController {
         return "index";
     }
 
-    @ApiOperation("转换后的坐标Excel导出 (复制请求链接浏览器访问下载)")
+    @ApiOperation(value = "转换后的坐标Excel导出",
+            notes = "Excel批量导入坐标后，复制该请求链接浏览器访问下载Excel(转换后的坐标)，转换失败Excel会有相应提示")
     @GetMapping("/export")
     public void downLoad(HttpServletResponse response) throws Exception {
         Cache cache = cacheManager.getCache("file");
@@ -74,7 +76,8 @@ public class IndexController {
         cache.clear();
     }
 
-    @ApiOperation("Excel批量导入坐标")
+    @ApiOperation(value = "Excel批量导入坐标，wgs84坐标转Gcj02坐标",
+            notes = "经纬度支持度（108.9017200000）、度分（108°53）或度分秒三种格式导入（108°53'49.64\"），注意°、'、\"都要用英文格式，且与数字之间无空格。")
     @PostMapping("/import")
     public void importExcel(@RequestParam("file") MultipartFile file) throws Exception {
         // 清缓存
@@ -103,6 +106,7 @@ public class IndexController {
 
             if (StringUtils.isEmpty(lat) || StringUtils.isEmpty(lng)) {
                 myCoordinate.setRemark("数据不能为空");
+                myCoordinate.setSucceeded(false);
                 result.add(myCoordinate);
                 continue;
             }
@@ -122,10 +126,32 @@ public class IndexController {
                 result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
+            myCoordinate.setSucceeded(false);
             myCoordinate.setRemark("数据格式有误");
             result.add(myCoordinate);
         }
         //  写入緩存
         cache.put("result", result);
+    }
+
+    @ApiOperation("Excel导入模板下载")
+    @GetMapping("/template")
+    public void template(HttpServletResponse response) throws Exception {
+
+        List<MyCoordinate> result = new ArrayList<>();
+        response.setCharacterEncoding("UTF-8");
+        String name = URLEncoder.encode("坐标转换模板.xlsx", "UTF-8");
+        response.setContentType("application/x-msdownload");
+        response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
+        try (OutputStream out = response.getOutputStream()) {
+            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
+            Sheet sheet1 = new Sheet(1, 0, MyCoordinate2.class);
+
+            sheet1.setSheetName("坐标转换模板");
+            writer.write(result, sheet1);
+            writer.finish();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

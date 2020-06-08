@@ -1,4 +1,4 @@
-package com.summit.coordinates.common;
+package com.summit.coordinates.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
@@ -10,14 +10,12 @@ import lombok.Data;
  * 实体类.
  */
 @Data
-public class MyCoordinate extends BaseRowModel {
+public class MyCoordinate2 extends BaseRowModel {
 
-    @ExcelProperty(value = "经度(火星坐标)", index = 0)
+    @ExcelProperty(value = "经度(wgs84坐标)", index = 0)
     private String longitude;
-    @ExcelProperty(value = "纬度(火星坐标)", index = 1)
+    @ExcelProperty(value = "纬度(wgs84坐标)", index = 1)
     private String latitude;
-    @ExcelProperty(value = "备注", index = 2)
-    private String remark;
 
     @Override
     public String toString() {
