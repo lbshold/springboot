@@ -1,4 +1,4 @@
-package com.summit.coordinates.web;
+package com.summit.coordinates.controller;
 
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
@@ -6,13 +6,12 @@ import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.google.common.base.Strings;
 import com.summit.coordinates.common.ExcelListener;
-import com.summit.coordinates.common.MyObject;
+import com.summit.coordinates.common.MyCoordinate;
 import com.summit.coordinates.util.CoordinateConvertUtils;
-import com.summit.coordinates.util.CoordinateUtil;
+import com.summit.coordinates.util.CoordinateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,13 +22,12 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by liusj on 2019/5/24
  */
-@Controller
+//@Controller
 public class IndexController {
 
     private static final String REGEX = "^\\d+" + "°" + "\\d+" + "′" + "\\d*\\.?\\d*" + "″";
@@ -52,7 +50,7 @@ public class IndexController {
         Cache cache = cacheManager.getCache("file");
         Cache.ValueWrapper cacheValue = cache.get("result");
         if (cacheValue != null) {
-            List<MyObject> result = (List<MyObject>) cacheValue.get();
+            List<MyCoordinate> result = (List<MyCoordinate>) cacheValue.get();
             //  写入excel
             response.setCharacterEncoding("UTF-8");
             String name = URLEncoder.encode("火星坐标.xlsx", "UTF-8");
@@ -60,7 +58,7 @@ public class IndexController {
             response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
             try (OutputStream out = response.getOutputStream()) {
                 ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
-                Sheet sheet1 = new Sheet(1, 0, MyObject.class);
+                Sheet sheet1 = new Sheet(1, 0, MyCoordinate.class);
 
                 sheet1.setSheetName("火星坐标");
                 writer.write(result, sheet1);
@@ -84,39 +82,37 @@ public class IndexController {
         // 解析每行结果在listener中处理
         ExcelListener listener = new ExcelListener();
         ExcelReader excelReader = new ExcelReader(file.getInputStream(), ExcelTypeEnum.XLSX, null, listener);
-        excelReader.read(new Sheet(1, 1, MyObject.class));
+        excelReader.read(new Sheet(1, 1, MyCoordinate.class));
 
-        List<MyObject> datas = listener.getDatas();
+        List<MyCoordinate> datas = listener.getDatas();
 
         // 数据转化
         Pattern pattern = Pattern.compile(REGEX);
         Pattern pattern2 = Pattern.compile(REGEX2);
         Pattern pattern3 = Pattern.compile(REGEX3);
-        Matcher matcher = pattern.matcher("116°31′35″");
-        System.out.println(matcher.find());
 
-        List<MyObject> result = new ArrayList<>();
-        datas.forEach(myObject -> {
-            if (!Strings.isNullOrEmpty(myObject.getLatitude())) {
-                if (pattern.matcher(myObject.getLatitude().trim()).find() && pattern2.matcher(myObject.getLongitude().trim()).find()) {
-                    myObject.setLongitude(CoordinateUtil.DmsTurnDD(myObject.getLongitude()));
-                    myObject.setLatitude(CoordinateUtil.DmsTurnDD(myObject.getLatitude()));
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myObject));
-                } else if (pattern2.matcher(myObject.getLatitude().trim()).find() && pattern2.matcher(myObject.getLongitude().trim()).find()) {
-                    myObject.setLongitude(CoordinateUtil.DmTurnDD(myObject.getLongitude()));
-                    myObject.setLatitude(CoordinateUtil.DmTurnDD(myObject.getLatitude()));
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myObject));
-                } else if (pattern3.matcher(myObject.getLatitude().trim()).find() && pattern3.matcher(myObject.getLongitude().trim()).find()) {
-                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myObject));
+        List<MyCoordinate> result = new ArrayList<>();
+        datas.forEach(myCoordinate -> {
+            if (!Strings.isNullOrEmpty(myCoordinate.getLatitude())) {
+                if (pattern.matcher(myCoordinate.getLatitude().trim()).find() && pattern2.matcher(myCoordinate.getLongitude().trim()).find()) {
+                    myCoordinate.setLongitude(CoordinateFormatUtils.DmsTurnDD(myCoordinate.getLongitude()));
+                    myCoordinate.setLatitude(CoordinateFormatUtils.DmsTurnDD(myCoordinate.getLatitude()));
+                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                } else if (pattern2.matcher(myCoordinate.getLatitude().trim()).find() && pattern2.matcher(myCoordinate.getLongitude().trim()).find()) {
+                    myCoordinate.setLongitude(CoordinateFormatUtils.DmTurnDD(myCoordinate.getLongitude()));
+                    myCoordinate.setLatitude(CoordinateFormatUtils.DmTurnDD(myCoordinate.getLatitude()));
+                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                } else if (pattern3.matcher(myCoordinate.getLatitude().trim()).find() && pattern3.matcher(myCoordinate.getLongitude().trim()).find()) {
+                    result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
                 } else {
-                    System.out.println(myObject);
-                    MyObject newObj = new MyObject();
+                    System.out.println(myCoordinate);
+                    MyCoordinate newObj = new MyCoordinate();
                     newObj.setLatitude("数据格式有误");
                     newObj.setLongitude("数据格式有误");
                     result.add(newObj);
                 }
             } else {
-                result.add(myObject);
+                result.add(myCoordinate);
             }
         });
         //  写入緩存

@@ -1,5 +1,7 @@
 package com.summit.coordinates;
 
+import com.summit.coordinates.util.CoordinateConvertUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,13 +15,15 @@ public class MainDemo {
 //        MyObject{longitude=' 119°6′14.13″', latitude='  39°37′29.42″'}
 //        MyObject{longitude='117°48′29.97″', latitude='40′53′14.03″'}
         //                    116°51′33.9″
-        String REGEX = "^\\d+" + "(\\." + "\\d+)?$";
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher("115");
-        System.out.println(matcher.find());
+//        String REGEX = "^\\d+" + "(\\." + "\\d+)?$";
+//        Pattern pattern = Pattern.compile(REGEX);
+//        Matcher matcher = pattern.matcher("115");
+//        System.out.println(matcher.find());
+//
+//        String str = "  123  ";
+//        System.out.println("hello"+str+"hello");
+//        System.out.println("hello"+str.trim()+"hello");
 
-        String str = "  123  ";
-        System.out.println("hello"+str+"hello");
-        System.out.println("hello"+str.trim()+"hello");
+
     }
 }

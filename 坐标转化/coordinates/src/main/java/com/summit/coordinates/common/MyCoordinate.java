@@ -8,7 +8,7 @@ import com.alibaba.excel.metadata.BaseRowModel;
  * <p>
  * 实体类.
  */
-public class MyObject extends BaseRowModel {
+public class MyCoordinate extends BaseRowModel {
 
     @ExcelProperty(value = "经度(火星坐标)", index = 0)
     private String longitude;

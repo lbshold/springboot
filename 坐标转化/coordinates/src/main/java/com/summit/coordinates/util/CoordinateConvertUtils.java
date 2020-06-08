@@ -1,7 +1,10 @@
 package com.summit.coordinates.util;
 
-import com.summit.coordinates.common.MyObject;
+import com.summit.coordinates.common.MyCoordinate;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * Created by liusj on 2019/4/23
@@ -55,19 +58,6 @@ public class CoordinateConvertUtils {
     /**
      * 国际坐标(WGS84)转火星坐标系(GCJ02).
      *
-     * @param myObject
-     * @return
-     */
-    public static MyObject wgs84ToGcj02Copy(MyObject myObject) {
-        Point point = wgs84ToGcj02(Double.valueOf(myObject.getLongitude()), Double.valueOf(myObject.getLatitude()));
-        myObject.setLatitude(String.valueOf(point.lat));
-        myObject.setLongitude(String.valueOf(point.lng));
-        return myObject;
-    }
-
-    /**
-     * 国际坐标(WGS84)转火星坐标系(GCJ02).
-     *
      * @param lng 经度
      * @param lat 纬度
      * @return Point point
@@ -113,6 +103,19 @@ public class CoordinateConvertUtils {
         return new Point(lng * 2 - mglng, lat * 2 - mglat);
     }
 
+    /**
+     * 国际坐标(WGS84)转火星坐标系(GCJ02).
+     *
+     * @param myCoordinate
+     * @return
+     */
+    public static MyCoordinate wgs84ToGcj02Copy(MyCoordinate myCoordinate) {
+        Point point = wgs84ToGcj02(Double.valueOf(myCoordinate.getLongitude()), Double.valueOf(myCoordinate.getLatitude()));
+        myCoordinate.setLatitude(String.valueOf(point.lat));
+        myCoordinate.setLongitude(String.valueOf(point.lng));
+        return myCoordinate;
+    }
+
     public static double transformlat(double lng, double lat) {
         double ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat +
                 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
@@ -146,9 +149,17 @@ public class CoordinateConvertUtils {
     }
 
     @Data
-    static class Point {
+    public static class Point implements Serializable {
+
+        private static final long serialVersionUID = -7781185986640500867L;
+
+        @ApiModelProperty(value = "经度")
         private double lng;
+        @ApiModelProperty(value = "纬度")
         private double lat;
+
+        public Point() {
+        }
 
         public Point(double lng, double lat) {
             this.lng = lng;
