@@ -42,6 +42,8 @@ public class CoordinateExcelController {
     private static final String REGEX2 = "^\\d+" + "°" + "\\d*\\.?\\d*′?'?$";  // 度分
     private static final String REGEX3 = "^\\d+" + "(\\." + "\\d+)?$";  // 小数点
 
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
     @Autowired
     private CacheManager cacheManager;
 
@@ -60,7 +62,7 @@ public class CoordinateExcelController {
             List<MyCoordinate> result = (List<MyCoordinate>) cacheValue.get();
             //  写入excel
             response.setCharacterEncoding("UTF-8");
-            String name = URLEncoder.encode("Gcj02坐标.xlsx", "UTF-8");
+            String name = URLEncoder.encode("转换后的Gcj02坐标.xlsx", "UTF-8");
             response.setContentType("application/x-msdownload");
             response.addHeader("Content-Disposition", "attachment;filename*=utf-8'zh_cn'" + name);
             try (OutputStream out = response.getOutputStream()) {
@@ -120,7 +122,7 @@ public class CoordinateExcelController {
         // 读取Excel中的坐标数据
         ExcelListener listener = new ExcelListener();
         ExcelReader excelReader = new ExcelReader(file.getInputStream(), ExcelTypeEnum.XLSX, null, listener);
-        excelReader.read(new Sheet(1, 2, MyCoordinate.class));
+        excelReader.read(new Sheet(1, 1, MyCoordinate.class));
 
         List<MyCoordinate> datas = listener.getDatas();
 
@@ -134,32 +136,39 @@ public class CoordinateExcelController {
         // 遍历坐标数据
         for (MyCoordinate myCoordinate : datas) {
 
-            lat = myCoordinate.getLatitude().trim();
-            lng = myCoordinate.getLongitude().trim();
+            lat = myCoordinate.getLatitude();
+            lng = myCoordinate.getLongitude();
 
-            if (StringUtils.isEmpty(lat) || StringUtils.isEmpty(lng)) {
+            if (StringUtils.isEmpty(lat) || StringUtils.isEmpty(lng) || StringUtils.isEmpty(lat.trim()) || StringUtils.isEmpty(lng.trim())) {
                 myCoordinate.setRemark("数据不能为空");
-                myCoordinate.setSucceeded(false);
+                myCoordinate.setIsSucceeded(FALSE);
                 result.add(myCoordinate);
                 continue;
             }
+
+            lat = lat.trim();
+            lng = lng.trim();
+
             if (pattern.matcher(lat).find() && pattern2.matcher(lng).find()) {
                 myCoordinate.setLongitude(CoordinateFormatUtils.DmsTurnDD(lat));
                 myCoordinate.setLatitude(CoordinateFormatUtils.DmsTurnDD(lng));
+                myCoordinate.setIsSucceeded(TRUE);
                 result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
             if (pattern2.matcher(lat).find() && pattern2.matcher(lng).find()) {
                 myCoordinate.setLongitude(CoordinateFormatUtils.DmTurnDD(lat));
                 myCoordinate.setLatitude(CoordinateFormatUtils.DmTurnDD(lng));
+                myCoordinate.setIsSucceeded(TRUE);
                 result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
             if (pattern3.matcher(lat).find() && pattern3.matcher(lng).find()) {
+                myCoordinate.setIsSucceeded(TRUE);
                 result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
-            myCoordinate.setSucceeded(false);
+            myCoordinate.setIsSucceeded(FALSE);
             myCoordinate.setRemark("数据格式有误");
             result.add(myCoordinate);
         }

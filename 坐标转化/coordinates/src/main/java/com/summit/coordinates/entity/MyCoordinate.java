@@ -12,12 +12,12 @@ import lombok.Data;
 @Data
 public class MyCoordinate extends BaseRowModel {
 
-    @ExcelProperty(value = "经度(Gcj02坐标)", index = 0)
+    @ExcelProperty(value = "经度(GCJ-02坐标)", index = 0)
     private String longitude;
-    @ExcelProperty(value = "纬度(Gcj02坐标)", index = 1)
+    @ExcelProperty(value = "纬度(GCJ-02坐标)", index = 1)
     private String latitude;
     @ExcelProperty(value = "是否转换成功", index = 2)
-    private boolean isSucceeded = true;
+    private String isSucceeded;
     @ExcelProperty(value = "备注", index = 3)
     private String remark;
 
