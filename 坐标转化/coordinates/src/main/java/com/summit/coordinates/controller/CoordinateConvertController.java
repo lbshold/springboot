@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * 坐标转换Controller.
  */
-@Api(value = "坐标转换Controller", tags = "坐标转换Controller")
-@RestController("/converts")
+@Api(tags = "坐标转换Controller")
+@RestController("/conversions")
 public class CoordinateConvertController {
 
     @ApiOperation("火星坐标系(GCJ-02)转百度坐标系(BD-09)")

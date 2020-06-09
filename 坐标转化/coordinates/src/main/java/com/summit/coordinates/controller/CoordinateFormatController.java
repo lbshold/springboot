@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * 坐标格式转换Controller.
  */
-@Api(value = "坐标格式转换Controller", tags = "坐标格式转换Controller")
+@Api(tags = "坐标格式转换Controller")
 @RestController("/formats")
 public class CoordinateFormatController {
 

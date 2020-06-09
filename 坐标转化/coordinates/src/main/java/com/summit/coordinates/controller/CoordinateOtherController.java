@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * 坐标其他工具.
  */
-@Api(value = "坐标工具Controller", tags = "坐标工具Controller")
+@Api(tags = "坐标工具Controller")
 @RestController("/others")
 public class CoordinateOtherController {
 

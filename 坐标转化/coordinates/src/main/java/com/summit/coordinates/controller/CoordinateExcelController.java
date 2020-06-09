@@ -34,8 +34,8 @@ import java.util.regex.Pattern;
  * Created by liusj on 2019/5/24
  */
 @Slf4j
-@Api(value = "Excel批量转换坐标", tags = "Excel批量转换坐标")
-@RestController("/batch")
+@Api(tags = "Excel批量转换坐标")
+@RestController("/batchs")
 public class CoordinateExcelController {
 
     private static final String REGEX = "^\\d+" + "°" + "\\d+" + "′" + "\\d*\\.?\\d*" + "″";
@@ -112,8 +112,8 @@ public class CoordinateExcelController {
     /**
      * 1, 读取Excel中的坐标数据
      * 2. 遍历坐标数据，
-     *          a. 坐标数据格式转换,度分秒、度分转度
-     *          b. 坐标数据经纬度格式转换，WGS84转GCJ02
+     * a. 坐标数据格式转换,度分秒、度分转度
+     * b. 坐标数据经纬度格式转换，WGS84转GCJ02
      */
     private List<MyCoordinate> convertCoordinate(@RequestParam("file") MultipartFile file) throws IOException {
 
