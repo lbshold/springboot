@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
 @RestController("/batchs")
 public class CoordinateExcelController {
 
-    private static final String REGEX = "^\\d+" + "°" + "\\d+" + "′" + "\\d*\\.?\\d*" + "″";
-    private static final String REGEX2 = "^\\d+" + "°" + "\\d*\\.?\\d*" + "′";
-    private static final String REGEX3 = "^\\d+" + "(\\." + "\\d+)?$";
+    private static final String REGEX = "^\\d+" + "°" + "\\d+′?'?" + "\\d*\\.?\\d*\"?〃?″?"; // 度分秒
+    private static final String REGEX2 = "^\\d+" + "°" + "\\d*\\.?\\d*′?'?$";  // 度分
+    private static final String REGEX3 = "^\\d+" + "(\\." + "\\d+)?$";  // 小数点
 
     @Autowired
     private CacheManager cacheManager;
@@ -76,7 +76,7 @@ public class CoordinateExcelController {
         cache.clear();
     }
 
-    @ApiOperation(value = "Excel批量导入坐标，wgs84坐标转Gcj02坐标",
+    @ApiOperation(value = "Excel批量导入坐标，WGS-84坐标转GCJ-02坐标",
             notes = "经纬度支持度（108.9017200000）、度分（108°53）或度分秒三种格式导入（108°53'49.64\"），注意°、'、\"都要用英文格式，且与数字之间无空格。")
     @PostMapping("/import")
     public void importExcel(@RequestParam("file") MultipartFile file) throws Exception {

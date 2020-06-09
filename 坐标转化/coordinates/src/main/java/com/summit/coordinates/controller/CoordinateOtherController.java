@@ -34,7 +34,7 @@ public class CoordinateOtherController {
         return String.format("%.2f", CoordinateFormatUtils.getDistance(lat1, lng1, lat2, lng2));
     }
 
-    @ApiOperation("判断是否在国外")
+    @ApiOperation("判断坐标是否在国外")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "lng", value = "经度", required = true),
             @ApiImplicitParam(name = "lat", value = "纬度", required = true)
