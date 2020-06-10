@@ -1,6 +1,5 @@
 package com.summit.coordinates.util;
 
-import com.summit.coordinates.entity.MyCoordinate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,7 +14,7 @@ import java.io.Serializable;
  * 国际坐标   WGS-84  国际标准，GPS坐标（Google Earth使用、或者GPS模块）
  * BD-09   百度坐标偏移标准，Baidu Map使用
  */
-public class CoordinateConvertUtils {
+public class CoordinateConvertUtil {
 
     private static double x_pi = 3.14159265358979324 * 3000.0 / 180.0;
     private static double pi = 3.1415926535897932384626;
@@ -29,7 +28,7 @@ public class CoordinateConvertUtils {
      * @param lat 纬度
      * @return Point point
      */
-    public static Point gcg02ToBd09(double lng, double lat) {
+    public static Point gcj02ToBd09(double lng, double lat) {
         double z = Math.sqrt(lng * lng + lat * lat) + 0.00002 * Math.sin(lat * x_pi);
         double theta = Math.atan2(lat, lng) + 0.000003 * Math.cos(lng * x_pi);
         double bd_lng = z * Math.cos(theta) + 0.0065;
@@ -57,13 +56,14 @@ public class CoordinateConvertUtils {
 
     /**
      * 国际坐标(WGS84)转火星坐标系(GCJ02).
+     * 判断是否在国内，不在国内不做转换.
      *
      * @param lng 经度
      * @param lat 纬度
      * @return Point point
      */
     public static Point wgs84ToGcj02(double lng, double lat) {
-        if (outOfChina(lng, lat)) { // 判读是否在国内
+        if (outOfChina(lng, lat)) { // 判断是否在国内
             return new Point(lng, lat);
         }
         double dlat = transformlat(lng - 105.0, lat - 35.0);
@@ -87,9 +87,6 @@ public class CoordinateConvertUtils {
      * @return Point point
      */
     public static Point gcj02ToWgs84(double lng, double lat) {
-        if (outOfChina(lng, lat)) { // 判读是否在国内
-            return new Point(lng, lat);
-        }
         double dlat = transformlat(lng - 105.0, lat - 35.0);
         double dlng = transformlng(lng - 105.0, lat - 35.0);
         double radlat = lat / 180.0 * pi;
@@ -104,16 +101,14 @@ public class CoordinateConvertUtils {
     }
 
     /**
-     * 国际坐标(WGS84)转火星坐标系(GCJ02).
+     * 判断是否在国内.
      *
-     * @param myCoordinate
-     * @return
+     * @param lng 纬度
+     * @param lat 经度
+     * @return boolean true/false
      */
-    public static MyCoordinate wgs84ToGcj02Copy(MyCoordinate myCoordinate) {
-        Point point = wgs84ToGcj02(Double.valueOf(myCoordinate.getLongitude()), Double.valueOf(myCoordinate.getLatitude()));
-        myCoordinate.setLatitude(String.valueOf(point.lat));
-        myCoordinate.setLongitude(String.valueOf(point.lng));
-        return myCoordinate;
+    public static boolean outOfChina(double lng, double lat) {
+        return !(lng > 73.66 && lng < 135.05 && lat > 3.86 && lat < 53.55);
     }
 
     public static double transformlat(double lng, double lat) {
@@ -140,17 +135,8 @@ public class CoordinateConvertUtils {
         return ret;
     }
 
-
-    /**
-     * 判断是否在国内，不在国内不做偏移.
-     */
-    public static boolean outOfChina(double lng, double lat) {
-        return !(lng > 73.66 && lng < 135.05 && lat > 3.86 && lat < 53.55);
-    }
-
     @Data
     public static class Point implements Serializable {
-
         private static final long serialVersionUID = -7781185986640500867L;
 
         @ApiModelProperty(value = "经度")
@@ -165,17 +151,5 @@ public class CoordinateConvertUtils {
             this.lng = lng;
             this.lat = lat;
         }
-    }
-
-    private static CoordinateConvertUtils coordinateConvertUtils;
-
-    private CoordinateConvertUtils() {
-    }
-
-    public static synchronized CoordinateConvertUtils getInstance() {
-        if (coordinateConvertUtils == null) {
-            return new CoordinateConvertUtils();
-        }
-        return coordinateConvertUtils;
     }
 }

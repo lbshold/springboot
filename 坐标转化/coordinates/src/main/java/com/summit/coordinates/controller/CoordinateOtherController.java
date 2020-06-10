@@ -1,7 +1,7 @@
 package com.summit.coordinates.controller;
 
-import com.summit.coordinates.util.CoordinateConvertUtils;
-import com.summit.coordinates.util.CoordinateFormatUtils;
+import com.summit.coordinates.util.CoordinateConvertUtil;
+import com.summit.coordinates.util.CoordinateFormatUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -26,12 +26,12 @@ public class CoordinateOtherController {
             @ApiImplicitParam(name = "lng2", value = "经度2", required = true),
             @ApiImplicitParam(name = "lat2", value = "纬度2", required = true)
     })
-    @GetMapping("/getDistance")
+    @GetMapping("/not-auth/getDistance")
     public String getDistance(@RequestParam double lng1,
                               @RequestParam double lat1,
                               @RequestParam double lng2,
                               @RequestParam double lat2) {
-        return String.format("%.2f", CoordinateFormatUtils.getDistance(lat1, lng1, lat2, lng2));
+        return String.format("%.2f", CoordinateFormatUtil.getDistance(lat1, lng1, lat2, lng2));
     }
 
     @ApiOperation("判断坐标是否在国外")
@@ -39,8 +39,8 @@ public class CoordinateOtherController {
             @ApiImplicitParam(name = "lng", value = "经度", required = true),
             @ApiImplicitParam(name = "lat", value = "纬度", required = true)
     })
-    @GetMapping("/outOfChina")
+    @GetMapping("/not-auth/outOfChina")
     public boolean outOfChina(double lng, double lat) {
-        return CoordinateConvertUtils.outOfChina(lng, lat);
+        return CoordinateConvertUtil.outOfChina(lng, lat);
     }
 }

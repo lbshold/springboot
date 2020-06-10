@@ -7,8 +7,8 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.summit.coordinates.config.ExcelListener;
 import com.summit.coordinates.entity.MyCoordinate;
 import com.summit.coordinates.entity.MyCoordinate2;
-import com.summit.coordinates.util.CoordinateConvertUtils;
-import com.summit.coordinates.util.CoordinateFormatUtils;
+import com.summit.coordinates.util.CoordinateFormatUtil;
+import com.summit.coordinates.util.MyUitls;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -47,14 +47,9 @@ public class CoordinateExcelController {
     @Autowired
     private CacheManager cacheManager;
 
-    //    @GetMapping("/")
-//    public String index() {
-//        return "index";
-//    }
-
     @ApiOperation(value = "转换后的坐标Excel导出",
             notes = "Excel批量导入坐标后，复制该请求链接浏览器访问下载Excel(转换后的坐标)，转换失败Excel会有相应提示")
-    @GetMapping("/export")
+    @GetMapping("/not-auth/export")
     public void downLoad(HttpServletResponse response) throws Exception {
         Cache cache = cacheManager.getCache("file");
         Cache.ValueWrapper cacheValue = cache.get("result");
@@ -80,7 +75,7 @@ public class CoordinateExcelController {
 
     @ApiOperation(value = "Excel批量导入坐标，WGS-84坐标转GCJ-02坐标",
             notes = "经纬度支持度（108.9017200000）、度分（108°53）或度分秒三种格式导入（108°53'49.64\"），注意°、'、\"都要用英文格式，且与数字之间无空格。")
-    @PostMapping("/import")
+    @PostMapping("/not-auth/import")
     public void importExcel(@RequestParam("file") MultipartFile file) throws Exception {
         // 清缓存
         Cache cache = cacheManager.getCache("file");
@@ -92,7 +87,7 @@ public class CoordinateExcelController {
     }
 
     @ApiOperation("Excel导入模板下载")
-    @GetMapping("/template")
+    @GetMapping("/not-auth/template")
     public void template(HttpServletResponse response) throws Exception {
         List<MyCoordinate> result = new ArrayList<>();
         response.setCharacterEncoding("UTF-8");
@@ -150,22 +145,22 @@ public class CoordinateExcelController {
             lng = lng.trim();
 
             if (pattern.matcher(lat).find() && pattern2.matcher(lng).find()) {
-                myCoordinate.setLongitude(CoordinateFormatUtils.DmsTurnDD(lat));
-                myCoordinate.setLatitude(CoordinateFormatUtils.DmsTurnDD(lng));
+                myCoordinate.setLongitude(CoordinateFormatUtil.DmsTurnDD(lat));
+                myCoordinate.setLatitude(CoordinateFormatUtil.DmsTurnDD(lng));
                 myCoordinate.setIsSucceeded(TRUE);
-                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                result.add(MyUitls.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
             if (pattern2.matcher(lat).find() && pattern2.matcher(lng).find()) {
-                myCoordinate.setLongitude(CoordinateFormatUtils.DmTurnDD(lat));
-                myCoordinate.setLatitude(CoordinateFormatUtils.DmTurnDD(lng));
+                myCoordinate.setLongitude(CoordinateFormatUtil.DmTurnDD(lat));
+                myCoordinate.setLatitude(CoordinateFormatUtil.DmTurnDD(lng));
                 myCoordinate.setIsSucceeded(TRUE);
-                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                result.add(MyUitls.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
             if (pattern3.matcher(lat).find() && pattern3.matcher(lng).find()) {
                 myCoordinate.setIsSucceeded(TRUE);
-                result.add(CoordinateConvertUtils.wgs84ToGcj02Copy(myCoordinate));
+                result.add(MyUitls.wgs84ToGcj02Copy(myCoordinate));
                 continue;
             }
             myCoordinate.setIsSucceeded(FALSE);

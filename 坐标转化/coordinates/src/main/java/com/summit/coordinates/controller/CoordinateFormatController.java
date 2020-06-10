@@ -1,6 +1,6 @@
 package com.summit.coordinates.controller;
 
-import com.summit.coordinates.util.CoordinateFormatUtils;
+import com.summit.coordinates.util.CoordinateFormatUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,16 +19,16 @@ public class CoordinateFormatController {
 
     @ApiOperation("度分秒格式坐标转度度格式坐标，example：108°13′21″= 108.2225")
     @ApiParam(name = "dms", value = "待转换坐标", required = true)
-    @GetMapping("/dmsTurnDD")
+    @GetMapping("/not-auth/dmsTurnDD")
     public String dmsTurnDD(@RequestParam String dms) {
-        return CoordinateFormatUtils.DmsTurnDD(dms);
+        return CoordinateFormatUtil.DmsTurnDD(dms);
     }
 
     @ApiOperation("度分格式坐标转度度格式坐标，example：112°30.4128 = 112.50688")
     @ApiParam(name = "dms", value = "待转换坐标", required = true)
-    @GetMapping("/dmTurnDD")
+    @GetMapping("/not-auth/dmTurnDD")
     public String dmTurnDD(@RequestParam String dm) {
-        return CoordinateFormatUtils.DmTurnDD(dm);
+        return CoordinateFormatUtil.DmTurnDD(dm);
     }
 
 }
