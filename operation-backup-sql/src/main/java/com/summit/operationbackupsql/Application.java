@@ -25,7 +25,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    private static final String formatSql = "mysqldump -h%s -p%s -u%s -p%s %s > %s";
+    private static final String formatSql = "mysqldump -h%s -P%s -u%s -p%s --database %s > %s";
 
     @Value("${project.ip}")
     private String ip;
@@ -56,11 +56,11 @@ public class Application {
                 location);
 
         StringBuilder sqlStr = new StringBuilder(sql);
-        sqlStr.append("backup_").append(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).append(".sql");
+        sqlStr.append("operation_").append(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).append(".sql");
 
         logger.info(sqlStr.toString());
         try {
-            // 区分系统，执行命令有所不同
+            // 区分系统，不同系统执行命令有所不同
             String os = System.getProperty("os.name"); // 系统名称
             if (os.toLowerCase().startsWith("win")) {
                 Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", sqlStr.toString()}); // windows
