@@ -1,3 +1,6 @@
+server:
+  port: 9090
+
 # DataSource Config
 spring:
   datasource:
@@ -6,5 +9,36 @@ spring:
     url: jdbc:p6spy:mysql://localhost:3306/test?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&useSSL=true
     username: root
     password: root
-server:
-  port: 9090
+    initialSize: 3
+    minIdle: 3
+    maxActive: 30
+    maxWait: 15000
+    timeBetweenEvictionRunsMillis: 120000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 'x'
+    validationQueryTimeout: 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: false
+    maxPoolPreparedStatementPerConnectionSize: 20
+    removeAbandoned: true
+    removeAbandonedTimeoutMillis: 20000
+    logAbandoned: true
+    logDifferentThread: true
+    filters: log4j,stat
+    connectionProperties:  druid.stat.mergeSql=true;druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=3000
+    useGlobalDataSourceStat: true
+    # Druid 监控 Servlet 配置参数
+    druidRegistrationUrl: /druid/*
+    resetEnable: true
+    loginUsername: druid
+    loginPassword: druid
+    # Druid 监控过滤相关配置参数
+    filtersUrlPatterns: /*
+    exclusions: '*.js,*.gif,*.jpg,*.jpeg,*.png,*.css,*.ico,*.jsp,/druid/*'
+    sessionStatMaxCount: 2000
+    sessionStatEnable: true
+    principalSessionName: session_user_key
+    profileEnable: true
+
