@@ -3,7 +3,7 @@
 <mapper namespace="top.lconcise.mapper.UserMapper">
 
     <select id="selectPageVo" resultType="top.lconcise.domain.User">
-        SELECT id,`name` FROM user WHERE true
+        SELECT * FROM user WHERE true
         <if test="name != null and name !=''">AND `name` LIKE CONCAT('%',#{name},'%')</if>
     </select>
 

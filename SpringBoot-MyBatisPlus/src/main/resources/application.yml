@@ -42,3 +42,6 @@ spring:
     principalSessionName: session_user_key
     profileEnable: true
 
+mybatis-plus:
+  # 枚举包路径
+  type-enums-package: top.lconcise.domain
