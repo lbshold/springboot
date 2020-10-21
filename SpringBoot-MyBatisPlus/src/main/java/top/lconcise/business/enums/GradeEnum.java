@@ -1,20 +1,20 @@
-package top.lconcise.domain;
+package top.lconcise.business.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.baomidou.mybatisplus.core.enums.IEnum;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum GradeEnum {
 
-    PRIMARY(1,"小学"),
-    SECONDARY(2,"中学"),
-    HIGH(3,"高中");
+    PRIMARY(1, "小学"),
+    SECONDARY(2, "中学"),
+    HIGH(3, "高中");
 
-    @EnumValue
+    @EnumValue // 存数据值
     private int code;
+    @JsonValue // 返回json 中的值
     private String desc;
 
-    GradeEnum(int code,String desc){
+    GradeEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

@@ -44,4 +44,4 @@ spring:
 
 mybatis-plus:
   # 枚举包路径
-  type-enums-package: top.lconcise.domain
+  type-enums-package: top.lconcise.business.enums

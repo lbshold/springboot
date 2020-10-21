@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.lconcise.mapper.UserMapper">
 
-    <select id="selectPageVo" resultType="top.lconcise.domain.User">
-        SELECT * FROM user WHERE true
+    <select id="selectPageVo" resultType="top.lconcise.business.domain.User">
+        select * from sys_user
+        WHERE true
         <if test="name != null and name !=''">AND `name` LIKE CONCAT('%',#{name},'%')</if>
     </select>
 
