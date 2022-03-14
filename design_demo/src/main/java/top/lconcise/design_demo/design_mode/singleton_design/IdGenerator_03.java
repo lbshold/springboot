@@ -1,4 +1,4 @@
-package top.lconcise.design_demo.singleton_design;
+package top.lconcise.design_demo.design_mode.singleton_design;
 
 import java.util.concurrent.atomic.AtomicLong;
 
