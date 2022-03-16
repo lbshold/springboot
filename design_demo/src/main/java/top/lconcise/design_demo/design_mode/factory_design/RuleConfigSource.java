@@ -10,18 +10,11 @@ public class RuleConfigSource {
 
     public RuleConfig load(String ruleConfigFilePath) {
         String ruleConfigFileExtension = getFileExtension(ruleConfigFilePath);
-        IRuleConfigParser parser = null;
-        if ("json".equalsIgnoreCase(ruleConfigFileExtension)) {
-            parser = new JsonRuleConfigParser();
-        } else if ("xml".equalsIgnoreCase(ruleConfigFileExtension)) {
-            parser = new XmlRuleConfigParser();
-        } else if ("yaml".equalsIgnoreCase(ruleConfigFileExtension)) {
-            parser = new YamlRuleConfigParser();
-        } else if ("properties".equalsIgnoreCase(ruleConfigFileExtension)) {
-            parser = new PropertiesRuleConfigParser();
-        } else {
-            throw new InvalidRuleConfigException("Rule config file format is not supported: " + ruleConfigFilePath);
+        IRuleConfigParser parser = RuleConfigParseFactory.createParser(ruleConfigFileExtension);
+        if (parser == null) {
+            throw new InvalidRuleConfigException("Rule config file format is not supported: " + ruleConfigFileExtension);
         }
+
         String configText = "";
         // 从ruleConfigFilePath文件中读取配置文本到configText中
         RuleConfig ruleConfig = parser.parse(configText);
