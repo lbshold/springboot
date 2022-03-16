@@ -1,4 +1,4 @@
-package top.lconcise.design_demo.design_mode.factory_design;
+package top.lconcise.design_demo.design_mode.factory_design.simple_factory;
 
 /**
  * 简单工厂模式
