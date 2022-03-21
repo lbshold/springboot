@@ -6,11 +6,9 @@ package top.lconcise.design_demo.design_mode.duty_chain;
  */
 public class HandlerB extends Handler {
     @Override
-    protected void handle() {
+    protected boolean doHandle() {
         boolean handled = false;
         // ...
-        if (!handled && successor != null) {
-            successor.handle();
-        }
+        return handled;
     }
 }
