@@ -1,4 +1,4 @@
-package top.lconcise.design_demo.design_mode.duty_chain;
+package top.lconcise.design_demo.design_mode.duty_chain.linked;
 
 /**
  * @author: liusj
