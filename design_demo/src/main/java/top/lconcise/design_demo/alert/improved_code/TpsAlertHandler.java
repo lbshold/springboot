@@ -16,7 +16,7 @@ public class TpsAlertHandler extends AlertHandler {
 
     @Override
     public void check(ApiStatInfo apiStatInfo) {
-        long tps = apiStatInfo.getRequestConut() / apiStatInfo.getDurationSeconds();
+        long tps = apiStatInfo.getRequestCount() / apiStatInfo.getDurationSeconds();
         if (tps > alertRule.getMatchedRule(apiStatInfo.getApi()).getMaxTps()) {
             notification.notify(NotificationEmergencyLevel.URGENCY, "...");
         }
