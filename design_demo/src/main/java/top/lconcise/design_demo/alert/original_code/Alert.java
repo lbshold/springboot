@@ -20,7 +20,7 @@ public class Alert {
             notification.notify(NotificationEmergencyLevel.URGENCY, "...");
         }
         if (errorCount > rule.getMatchedRule(api).getMaxErrorCount()) {
-            notification.notify(NotificationEmergencyLevel.SERVER, "...");
+            notification.notify(NotificationEmergencyLevel.SEVERE, "...");
         }
     }
 }

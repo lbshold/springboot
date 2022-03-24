@@ -6,7 +6,7 @@ package top.lconcise.design_demo.alert.original_code;
  */
 public enum NotificationEmergencyLevel {
 
-    SERVER("001", "严重"),
+    SEVERE("001", "严重"),
     URGENCY("002", "紧急"),
     NORMAL("003", "普通"),
     TRIVIAL("004", "无关紧要");
