@@ -1,4 +1,4 @@
-package top.lconcise.design_demo.design_mode.creaction.factory_design.builder;
+package top.lconcise.design_demo.design_mode.creaction.builder;
 
 import lombok.Data;
 import org.springframework.util.StringUtils;
