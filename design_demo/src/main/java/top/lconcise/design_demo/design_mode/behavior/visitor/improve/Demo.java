@@ -11,8 +11,10 @@ public class Demo {
     public static void main(String[] args) {
         List<ResourceFile> resourceFileList = new ArrayList<>();
         Extractor extractor = new Extractor();
+        Compressor compressor = new Compressor();
         for (ResourceFile resourceFile : resourceFileList) {
             resourceFile.accept(extractor);
+            resourceFile.accept(compressor);
         }
     }
 }

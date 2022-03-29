@@ -4,7 +4,7 @@ package top.lconcise.design_demo.design_mode.behavior.visitor.improve;
  * @author: liusj
  * @date: 2022/3/29
  */
-public class PDFFile extends ResourceFile{
+public class PDFFile extends ResourceFile {
 
     public PDFFile(String filePath) {
         super(filePath);
@@ -13,5 +13,10 @@ public class PDFFile extends ResourceFile{
     @Override
     public void accept(Extractor extractor) {
         extractor.extract2txt(this);
+    }
+
+    @Override
+    public void accept(Compressor extractor) {
+        extractor.compress(this);
     }
 }
