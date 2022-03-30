@@ -2,6 +2,7 @@ package top.lconcise.design_demo.design_mode.behavior.strategy;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Properties;
  */
 public class Demo01 {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, IOException {
         Strategy strategy = null;
         Properties props = new Properties();
         props.load(new FileInputStream("./config.properties"));
