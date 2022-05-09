@@ -43,6 +43,7 @@ public class TextPdfUtil {
 
             stamper.setFormFlattening(true);// 如果为false，生成的PDF文件可以编辑，如果为true，生成的PDF文件不可以编辑
             stamper.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {

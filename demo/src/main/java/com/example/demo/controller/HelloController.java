@@ -24,13 +24,25 @@ public class HelloController {
 
     @GetMapping("/test02")
     public void test02(HttpServletResponse response) {
+        String str = "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称06加名称名称加名称07加名称名称加名称08加名称名称加名称09加名称名称加名称10加名称名称加名称"+ // 行100字符
+                "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称06加名称名称加名称07加名称名称加名称08加名称名称加名称09加名称名称加名称10加名称名称加名称"+
+                "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称06加名称名称加名称07加名称名称加名称08加名称名称加名称09加名称名称加名称10加名称名称加名称";
+
+        String str02 = "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称"+ // 行50字符
+                "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称"+
+                "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称";
+        System.out.println("文字长度："+str.length());
+        System.out.println("文字长度："+str02.length());
 
         try {
             Map<String, String> dataMap = new HashMap<>();
-            dataMap.put("a","2022年5月9日");
-            dataMap.put("b","2022年5月9日");
-            dataMap.put("c","名称名称名称名称名称");
-            dataMap.put("d","名称名称名称名称名称");
+            dataMap.put("toggle_2", "On");
+            dataMap.put("fill_1", "2022年5月9日");
+            dataMap.put("fill_2", "2022年5月9日");
+            dataMap.put("fill_3", "名称名称名称名称名称");
+            dataMap.put("fill_4", "名称名称名称名称名称");
+            dataMap.put("fill_15", str);
+            dataMap.put("fill_23", str02);
             ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
