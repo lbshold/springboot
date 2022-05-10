@@ -1,27 +1,53 @@
 package com.example.demo.pdf;
 
+import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 public class TextPdfUtil {
+
+
+    public static ByteArrayOutputStream mergePDF(List<byte[]> list) throws IOException, DocumentException {
+        Document document = null;
+        ByteArrayOutputStream out;
+        try {
+            document = new Document(new PdfReader(list.get(0)).getPageSize(1));
+            out = new ByteArrayOutputStream();
+            PdfCopy pdfCopy = new PdfCopy(document, out);
+            document.open();
+
+            for (byte[] bytes : list) {
+                PdfReader pdfReader = new PdfReader(bytes);
+                int numberOfPages = pdfReader.getNumberOfPages();
+                for (int i = 1; i <= numberOfPages; i++) {
+                    document.newPage();
+                    PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, i);
+                    pdfCopy.addPage(importedPage);
+                }
+            }
+        } finally {
+            if (document != null) {
+                document.close();
+            }
+        }
+        return out;
+    }
 
     /**
      * 利用模板生成pdf.
      *
      * @param dataMap
-     * @param imageMap
      * @param tempPath
      * @return
      */
-    public static ByteArrayOutputStream pdfOutPut(Map<String, String> dataMap, Map<String, File> imageMap, String tempPath) {
+    public static ByteArrayOutputStream pdfOutPut(Map<String, String> dataMap, String tempPath) {
         // 加载模板路径
         ClassPathResource classPathResource = new ClassPathResource(tempPath);
         String templatePath = classPathResource.getPath();
@@ -39,7 +65,7 @@ public class TextPdfUtil {
             stamper = new PdfStamper(reader, bos);
             AcroFields form = stamper.getAcroFields();
 
-            fillData(dataMap, imageMap, stamper, form);
+            fillData(dataMap, form);
 
             stamper.setFormFlattening(true);// 如果为false，生成的PDF文件可以编辑，如果为true，生成的PDF文件不可以编辑
             stamper.close();
@@ -56,16 +82,14 @@ public class TextPdfUtil {
      * 填充
      *
      * @param dataMap
-     * @param imageMap
-     * @param stamper
      * @param form
      * @throws DocumentException
      * @throws IOException
      */
-    private static void fillData(Map<String, String> dataMap, Map<String, File> imageMap, PdfStamper stamper, AcroFields form) throws DocumentException, IOException {
+    private static void fillData(Map<String, String> dataMap, AcroFields form) throws DocumentException, IOException {
         setFontType(form);
         fillContent(dataMap, form);
-        fillFixedPositionImages(imageMap, stamper, form);
+//        fillFixedPositionImages(imageMap, stamper, form);
     }
 
     /**
@@ -95,7 +119,7 @@ public class TextPdfUtil {
             String value = dataMap.get(key);
             // 设置字体大小
             form.setFieldProperty(key, "textsize", 10f, null);
-            form.setField(key, value);
+            form.setField(key, value,true);
         }
     }
 
