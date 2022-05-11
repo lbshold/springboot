@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class HelloController {
             "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称" +
             "01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称";
     public static String REGISTER = "templates/register.pdf";
+    public static String PictureRegister = "templates/PictureRegister.pdf";
 
     @GetMapping("/pdf")
     public void test02(HttpServletResponse response) {
@@ -50,7 +52,7 @@ public class HelloController {
             dataMap.put("fill_15", str);
             dataMap.put("fill_23", str02);
             dataMap.put("pageNumber", "1");
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, REGISTER);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
@@ -85,10 +87,10 @@ public class HelloController {
             dataMap.put("fill_15", str);
             dataMap.put("fill_23", str02);
             dataMap.put("pageNumber", "1");
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, REGISTER);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
 
             dataMap.put("pageNumber", "2");
-            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(dataMap, REGISTER);
+            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
 
 
             ServletOutputStream out = response.getOutputStream();
@@ -104,6 +106,53 @@ public class HelloController {
             ByteArrayOutputStream result = TextPdfUtil.mergePDF(list);
 
             result.writeTo(out);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            JSONObject r = new JSONObject();
+            r.put("code", "500");
+            r.put("msg", "导出失败,请重试或联系管理员");
+            try (ServletOutputStream printOut = response.getOutputStream()) {
+                printOut.write(r.toString().getBytes("UTF-8"));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @GetMapping("/pdfImage")
+    public void test01(HttpServletResponse response) {
+        String imageUrl = "http://192.168.2.223/file_api/group1/M00/00/3D/wKgC4WJ7FQWAab8fACDzmMupd5s338.jpg";
+        try {
+            Map<String, String> dataMap = new HashMap<>();
+            dataMap.put("fill_1", "01加名称名称加名称02加名称名称加名称");
+            dataMap.put("fill_2", "2022年5月9日");
+
+            dataMap.put("pageNumber", "1");
+
+            List<File> files = new ArrayList<>();
+            File imageFile = TextPdfUtil.getFileFromUrl(imageUrl);
+            File imageFile02 = TextPdfUtil.getFileFromUrl(imageUrl);
+            File imageFile03 = TextPdfUtil.getFileFromUrl(imageUrl);
+            File imageFile04 = TextPdfUtil.getFileFromUrl(imageUrl);
+            File imageFile05 = TextPdfUtil.getFileFromUrl(imageUrl);
+            File imageFile06 = TextPdfUtil.getFileFromUrl(imageUrl);
+            files.add(imageFile);
+            files.add(imageFile02);
+            files.add(imageFile03);
+            files.add(imageFile04);
+            files.add(imageFile05);
+            files.add(imageFile06);
+
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, files, PictureRegister);
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/pdf");
+            response.setCharacterEncoding("utf-8");
+            String fileName = URLEncoder.encode("证据照片登记表", "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+            out1.writeTo(out);
         } catch (Exception e) {
             e.printStackTrace();
             response.reset();
