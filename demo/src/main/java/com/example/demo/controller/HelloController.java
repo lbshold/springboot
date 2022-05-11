@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import cn.hutool.json.JSONObject;
+import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +53,9 @@ public class HelloController {
             dataMap.put("fill_15", str);
             dataMap.put("fill_23", str02);
             dataMap.put("pageNumber", "1");
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
+            FillContent fillContent = new FillContent();
+            fillContent.setContentMap(dataMap);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
@@ -87,10 +90,13 @@ public class HelloController {
             dataMap.put("fill_15", str);
             dataMap.put("fill_23", str02);
             dataMap.put("pageNumber", "1");
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
+
+            FillContent fillContent = new FillContent();
+            fillContent.setContentMap(dataMap);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
 
             dataMap.put("pageNumber", "2");
-            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(dataMap, null, REGISTER);
+            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
 
 
             ServletOutputStream out = response.getOutputStream();
@@ -146,7 +152,13 @@ public class HelloController {
             files.add(imageFile05);
             files.add(imageFile06);
 
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(dataMap, files, PictureRegister);
+            FillContent fillContent = new FillContent();
+            fillContent.setContentMap(dataMap);
+            Map<String, List<File>> imageMap = new HashMap<>();
+            imageMap.put("imageA", files);
+            fillContent.setImageMap(imageMap);
+
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, PictureRegister);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
