@@ -6,9 +6,11 @@ import com.example.demo.lawdoc.entity.LawDocFile;
 import com.example.demo.lawdoc.entity.LawFileRemarks;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import org.springframework.core.io.ClassPathResource;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -185,63 +187,6 @@ public class HelloController {
                 ex.printStackTrace();
             }
         }
-    }
-
-    @GetMapping("/catalog")
-    public void test04(HttpServletResponse response) throws IOException, DocumentException {
-        // 1.新建documnet对象
-        Document doc = new Document(PageSize.A4, 30, 30, 50, 30);//SUPPRESS
-        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
-        PdfWriter.getInstance(doc, response.getOutputStream());
-        doc.open();
-        // 字体设置
-        ClassPathResource fontResource = new ClassPathResource("templates/simsun.ttc");
-        BaseFont baseFont = BaseFont.createFont(fontResource.getPath() + ",1", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-
-        //标题
-        Paragraph firstParagraph = new Paragraph();
-        firstParagraph.setAlignment(Element.ALIGN_CENTER);
-        firstParagraph.setSpacingAfter(15);
-        //文本块
-        Chunk firstChunk = new Chunk("执法卷宗目录", new Font(baseFont, 24, Font.BOLD));
-        firstChunk.setLineHeight(30);
-        firstParagraph.add(firstChunk);
-        firstParagraph.setSpacingAfter(20);
-        doc.add(firstParagraph);
-
-        // 创建字体对象
-        Font font = new Font(baseFont, 14, Font.NORMAL);//SUPPRESS
-        Font font2 = new Font(baseFont, 15, Font.NORMAL);//SUPPRESS
-        // 添加5列表格
-        PdfPTable table = new PdfPTable(5);//SUPPRESS
-
-        // 设置各列列宽
-        table.setTotalWidth(new float[]{60, 120, 110, 60, 220});//SUPPRESS
-
-        PdfPCell[] cells = new PdfPCell[5];
-        PdfPRow pdfPRow = new PdfPRow(cells);
-        cells[0] = getPdfCell("序号", font2);
-        cells[1] = getPdfCell("材料名称", font2);
-        cells[2] = getPdfCell("文号", font2);
-        cells[3] = getPdfCell("页号", font2);
-        cells[4] = getPdfCell("备注", font2);
-        ArrayList<PdfPRow> rows = table.getRows();
-        rows.add(pdfPRow);
-//        table.addCell(getPdfCell("序号", font2));
-//        table.addCell(getPdfCell("材料名称", font2));
-//        table.addCell(getPdfCell("文号", font2));
-//        table.addCell(getPdfCell("页号", font2));
-//        table.addCell(getPdfCellLeft("备注", font2));
-
-        doc.add(table);
-        doc.close();
-
-        ServletOutputStream out = response.getOutputStream();
-        out1.writeTo(out);
-        response.setContentType("application/pdf");
-        response.setCharacterEncoding("utf-8");
-        String fileName = URLEncoder.encode("证据照片登记表", "UTF-8");
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
     }
 
     @GetMapping("/completedPdf")
