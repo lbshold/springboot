@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import cn.hutool.json.JSONObject;
 import com.example.demo.lawdoc.domain.PdfFactory;
+import com.example.demo.lawdoc.entity.LawDocFile;
 import com.example.demo.lawdoc.entity.LawFileRemarks;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -200,9 +198,7 @@ public class HelloController {
         ClassPathResource fontResource = new ClassPathResource("templates/simsun.ttc");
         BaseFont baseFont = BaseFont.createFont(fontResource.getPath() + ",1", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
 
-
-        //编辑一标题
-        //段落
+        //标题
         Paragraph firstParagraph = new Paragraph();
         firstParagraph.setAlignment(Element.ALIGN_CENTER);
         firstParagraph.setSpacingAfter(15);
@@ -223,19 +219,19 @@ public class HelloController {
         table.setTotalWidth(new float[]{60, 120, 110, 60, 220});//SUPPRESS
 
         PdfPCell[] cells = new PdfPCell[5];
-//        PdfPRow pdfPRow =new PdfPRow(cells);
-//        cells[0] = getPdfCell("序号",font);
-//        cells[1] = getPdfCell("材料名称",font);
-//        cells[2] = getPdfCell("文号",font);
-//        cells[3] = getPdfCell("文号",font);
-//        cells[4] = getPdfCell("文号",font);
-//        ArrayList<PdfPRow> rows = table.getRows();
-//        rows.add(pdfPRow);
-        table.addCell(getPdfCell("序号", font2));
-        table.addCell(getPdfCell("材料名称", font2));
-        table.addCell(getPdfCell("文号", font2));
-        table.addCell(getPdfCell("页号", font2));
-        table.addCell(getPdfCellLeft("备注", font2));
+        PdfPRow pdfPRow = new PdfPRow(cells);
+        cells[0] = getPdfCell("序号", font2);
+        cells[1] = getPdfCell("材料名称", font2);
+        cells[2] = getPdfCell("文号", font2);
+        cells[3] = getPdfCell("页号", font2);
+        cells[4] = getPdfCell("备注", font2);
+        ArrayList<PdfPRow> rows = table.getRows();
+        rows.add(pdfPRow);
+//        table.addCell(getPdfCell("序号", font2));
+//        table.addCell(getPdfCell("材料名称", font2));
+//        table.addCell(getPdfCell("文号", font2));
+//        table.addCell(getPdfCell("页号", font2));
+//        table.addCell(getPdfCellLeft("备注", font2));
 
         doc.add(table);
         doc.close();
@@ -248,7 +244,7 @@ public class HelloController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
     }
 
-    @GetMapping("/singlePdf")
+    @GetMapping("/completedPdf")
     public void test05(HttpServletResponse response) {
         LawFileRemarks fileRemarks = LawFileRemarks.builder()
                 .checkBy("罗永浩")
@@ -271,6 +267,41 @@ public class HelloController {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("completedCatalog")
+    public void test06(HttpServletResponse response) {
+        LawDocFile lawDocFile01 = LawDocFile.builder()
+                .description("01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称")
+                .fileName("文书名称")
+                .sort(1)
+                .lawNum("5454654645546465")
+                .pageNum("1-2")
+                .build();
+        LawDocFile lawDocFile02 = LawDocFile.builder()
+                .description("01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称")
+                .fileName("文书名称")
+                .sort(2)
+                .lawNum("5454654645546465")
+                .pageNum("3-4")
+                .build();
+        List<LawDocFile> lawDocFiles = new ArrayList<>();
+        lawDocFiles.add(lawDocFile01);
+        lawDocFiles.add(lawDocFile02);
+        try {
+            ByteArrayOutputStream catalog = PdfFactory.createCatalog(lawDocFiles);
+
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/pdf");
+            response.setCharacterEncoding("utf-8");
+            String fileName = URLEncoder.encode("目录", "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+            catalog.writeTo(out);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

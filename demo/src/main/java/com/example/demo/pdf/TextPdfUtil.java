@@ -18,7 +18,7 @@ import java.util.UUID;
 public class TextPdfUtil {
 
     /**
-     * 合并单元格
+     * 合并PDF
      *
      * @param list
      * @return
@@ -99,7 +99,7 @@ public class TextPdfUtil {
     /**
      * Url转File.
      */
-    public static File getFileFromUrl(String url) throws Exception {
+    public static File getFileFromUrl(String url) {
         //对本地文件命名
         String fileName = UUID.randomUUID().toString();
         File file = null;
