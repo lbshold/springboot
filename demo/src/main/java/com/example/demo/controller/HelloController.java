@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
 import cn.hutool.json.JSONObject;
+import com.example.demo.lawdoc.domain.PdfFactory;
+import com.example.demo.lawdoc.entity.LawFileRemarks;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -226,11 +231,11 @@ public class HelloController {
 //        cells[4] = getPdfCell("文号",font);
 //        ArrayList<PdfPRow> rows = table.getRows();
 //        rows.add(pdfPRow);
-        table.addCell(getPdfCell("序号",font2 ));
-        table.addCell(getPdfCell("材料名称",font2));
-        table.addCell(getPdfCell("文号",font2));
-        table.addCell(getPdfCell("页号",font2));
-        table.addCell(getPdfCellLeft("备注",font2));
+        table.addCell(getPdfCell("序号", font2));
+        table.addCell(getPdfCell("材料名称", font2));
+        table.addCell(getPdfCell("文号", font2));
+        table.addCell(getPdfCell("页号", font2));
+        table.addCell(getPdfCellLeft("备注", font2));
 
         doc.add(table);
         doc.close();
@@ -243,7 +248,34 @@ public class HelloController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
     }
 
-    private PdfPCell getPdfCell(String content,Font font) {
+    @GetMapping("/singlePdf")
+    public void test05(HttpServletResponse response) {
+        LawFileRemarks fileRemarks = LawFileRemarks.builder()
+                .checkBy("罗永浩")
+                .createBy("罗永浩")
+                .createTime("2022年5月12日")
+                .desc(str).build();
+        fileRemarks.setLawDocFileName("卷内备考表");
+
+        try {
+            ByteArrayOutputStream bos = PdfFactory.crateSinglePdf(fileRemarks);
+
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/pdf");
+            response.setCharacterEncoding("utf-8");
+            String fileName = URLEncoder.encode(fileRemarks.getLawDocFileName(), "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+            bos.writeTo(out);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private PdfPCell getPdfCell(String content, Font font) {
         PdfPCell pdfPCell = new PdfPCell(new Paragraph(content, font));
         pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         pdfPCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -251,7 +283,7 @@ public class HelloController {
         return pdfPCell;
     }
 
-    private PdfPCell getPdfCellLeft(String content,Font font) {
+    private PdfPCell getPdfCellLeft(String content, Font font) {
         PdfPCell pdfPCell = new PdfPCell(new Paragraph(content, font));
         pdfPCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         pdfPCell.setMinimumHeight(30);

@@ -1,4 +1,4 @@
-package top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory;
+package top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory.exception;
 
 /**
  * @author: liusj

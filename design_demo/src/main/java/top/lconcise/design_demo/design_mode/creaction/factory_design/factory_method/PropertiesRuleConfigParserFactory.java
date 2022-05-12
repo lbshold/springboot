@@ -1,7 +1,7 @@
 package top.lconcise.design_demo.design_mode.creaction.factory_design.factory_method;
 
-import top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory.PropertiesRuleConfigParser;
-import top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory.IRuleConfigParser;
+import top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory.RuleConfigParser.PropertiesRuleConfigParser;
+import top.lconcise.design_demo.design_mode.creaction.factory_design.simple_factory.RuleConfigParser.IRuleConfigParser;
 
 /**
  * @author: liusj
