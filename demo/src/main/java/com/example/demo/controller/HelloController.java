@@ -250,19 +250,4 @@ public class HelloController {
             e.printStackTrace();
         }
     }
-
-    private PdfPCell getPdfCell(String content, Font font) {
-        PdfPCell pdfPCell = new PdfPCell(new Paragraph(content, font));
-        pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        pdfPCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        pdfPCell.setMinimumHeight(30);
-        return pdfPCell;
-    }
-
-    private PdfPCell getPdfCellLeft(String content, Font font) {
-        PdfPCell pdfPCell = new PdfPCell(new Paragraph(content, font));
-        pdfPCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        pdfPCell.setMinimumHeight(30);
-        return pdfPCell;
-    }
 }

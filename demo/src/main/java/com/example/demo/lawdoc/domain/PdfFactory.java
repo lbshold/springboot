@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 卷宗、单个执法文书PDF生成.
+ * 卷宗、单个执法文书PDF生成工厂.
  *
  * @author: liusj
  * @date: 2022/5/12
@@ -26,13 +26,6 @@ public class PdfFactory {
 
     /**
      * 根据单个模板生产相应的PDF.
-     *
-     * @param baseDataTemplate
-     * @return
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws IOException
-     * @throws DocumentException
      */
     public static ByteArrayOutputStream crateSinglePdf(BaseDataTemplate baseDataTemplate)
             throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {

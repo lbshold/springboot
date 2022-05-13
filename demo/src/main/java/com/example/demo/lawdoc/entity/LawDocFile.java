@@ -37,7 +37,7 @@ public class LawDocFile implements Serializable {
     @ApiModelProperty(value = "文书状态")
     private Integer fileStatus;
 
-    @ApiModelProperty(value = "公示状态                                           ")
+    @ApiModelProperty(value = "公示状态")
     private Integer publicityStatus;
 
     @ApiModelProperty(value = "推送状态")
