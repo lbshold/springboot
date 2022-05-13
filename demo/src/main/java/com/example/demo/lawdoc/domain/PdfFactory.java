@@ -2,6 +2,7 @@ package com.example.demo.lawdoc.domain;
 
 import com.example.demo.lawdoc.entity.BaseDataTemplate;
 import com.example.demo.lawdoc.entity.LawDocFile;
+import com.example.demo.lawdoc.entity.LawDocInfo;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.*;
@@ -24,13 +25,37 @@ public class PdfFactory {
     private static final String FONT = "templates/simsun.ttc";
     private static final String CATALOG_TITLE = "执法卷宗目录";
 
+    public static ByteArrayOutputStream mergePdf(LawDocInfo info, List<LawDocFile> lawDocFileLit, List<BaseDataTemplate> infoList)
+            throws IllegalAccessException, IOException, DocumentException {
+
+        List<byte[]> docBosList = new ArrayList<>();
+
+        ByteArrayOutputStream infoBos = TextPdfUtil.pdfOutPut(info.generate(), TemplatePathFactory.getTemplatePath(info.getClass()),13f);
+        ByteArrayOutputStream catalogBos = PdfFactory.createCatalog(lawDocFileLit);
+        docBosList.add(infoBos.toByteArray());
+        docBosList.add(catalogBos.toByteArray());
+
+        for (BaseDataTemplate infoData : infoList) {
+            ByteArrayOutputStream bos = PdfFactory.createSinglePdf(infoData);
+            docBosList.add(bos.toByteArray());
+        }
+
+        return TextPdfUtil.mergePDF(docBosList);
+    }
+
     /**
      * 根据单个模板生产相应的PDF.
      */
-    public static ByteArrayOutputStream crateSinglePdf(BaseDataTemplate baseDataTemplate)
+    public static ByteArrayOutputStream createSinglePdf(BaseDataTemplate baseDataTemplate)
             throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {
         FillContent fillContent = baseDataTemplate.generate();
-        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(baseDataTemplate.getClass()));
+        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(baseDataTemplate.getClass()), 10f);
+    }
+
+    public static ByteArrayOutputStream createSinglePdf(LawDocInfo lawDocInfo)
+            throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {
+        FillContent fillContent = lawDocInfo.generate();
+        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(lawDocInfo.getClass()), 13f);
     }
 
     /**

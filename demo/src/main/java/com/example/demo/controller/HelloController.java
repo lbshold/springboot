@@ -2,15 +2,10 @@ package com.example.demo.controller;
 
 import cn.hutool.json.JSONObject;
 import com.example.demo.lawdoc.domain.PdfFactory;
-import com.example.demo.lawdoc.entity.LawDocFile;
-import com.example.demo.lawdoc.entity.LawFileRemarks;
+import com.example.demo.lawdoc.entity.*;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +59,7 @@ public class HelloController {
             dataMap.put("pageNumber", "1");
             FillContent fillContent = new FillContent();
             fillContent.setContentMap(dataMap);
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER, 10f);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
@@ -101,10 +97,10 @@ public class HelloController {
 
             FillContent fillContent = new FillContent();
             fillContent.setContentMap(dataMap);
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER, 10f);
 
             dataMap.put("pageNumber", "2");
-            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(fillContent, REGISTER);
+            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(fillContent, REGISTER, 10f);
 
 
             ServletOutputStream out = response.getOutputStream();
@@ -166,7 +162,7 @@ public class HelloController {
             imageMap.put("imageA", files);
             fillContent.setImageMap(imageMap);
 
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, PictureRegister);
+            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, PictureRegister, 10f);
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
@@ -191,20 +187,35 @@ public class HelloController {
 
     @GetMapping("/completedPdf")
     public void test05(HttpServletResponse response) {
-        LawFileRemarks fileRemarks = LawFileRemarks.builder()
-                .checkBy("罗永浩")
-                .createBy("罗永浩")
-                .createTime("2022年5月12日")
-                .desc(str).build();
-        fileRemarks.setLawDocFileName("卷内备考表");
+//        LawFileRemarks fileRemarks = LawFileRemarks.builder()
+//                .checkBy("罗永浩")
+//                .createBy("罗永浩")
+//                .createTime("2022年5月12日")
+//                .desc(str).build();
+//        fileRemarks.setLawDocFileName("卷内备考表");
+//        LawDocInfo info = LawDocInfo.builder()
+//                .lawcaseNum("案号20220513001")
+//                .lawcaseName("案件名称")
+//                .archiveHandleResult("处理结果")
+//                .lawcaseStartDate(LocalDateTime.now())
+//                .lawcaseEndDate(LocalDateTime.now())
+//                .archiveQzNum("全卷总号")
+//                .archiveAjNum("案件号").build();
+        LawFileFinalReport info = LawFileFinalReport.builder()
+                .name("罗永浩")
+                .sex("男")
+                .phone("15114818659")
+                .birthday("1989,01.01")
+                .idCardNo("610401199202261215")
+                .modeOfExecution("On").build();
 
         try {
-            ByteArrayOutputStream bos = PdfFactory.crateSinglePdf(fileRemarks);
+            ByteArrayOutputStream bos = PdfFactory.createSinglePdf(info);
 
             ServletOutputStream out = response.getOutputStream();
             response.setContentType("application/pdf");
             response.setCharacterEncoding("utf-8");
-            String fileName = URLEncoder.encode(fileRemarks.getLawDocFileName(), "UTF-8");
+            String fileName = URLEncoder.encode("PDF", "UTF-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
             bos.writeTo(out);
         } catch (IllegalAccessException e) {
@@ -247,6 +258,68 @@ public class HelloController {
         } catch (DocumentException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/completedFinalReport")
+    public void test07(HttpServletResponse response) {
+        LawFileRemarks fileRemarks = LawFileRemarks.builder()
+                .checkBy("罗永浩")
+                .createBy("罗永浩")
+                .createTime("2022年5月12日")
+                .desc(str).build();
+        fileRemarks.setLawDocFileName("卷内备考表");
+        LawDocInfo lawDocInfo = LawDocInfo.builder()
+                .lawcaseNum("案号20220513001")
+                .lawcaseName("案件名称")
+                .archiveHandleResult("处理结果")
+                .lawcaseStartDate(LocalDateTime.now())
+                .lawcaseEndDate(LocalDateTime.now())
+                .archiveQzNum("全卷总号")
+                .archiveAjNum("案件号").build();
+        LawFileFinalReport report = LawFileFinalReport.builder()
+                .name("罗永浩")
+                .sex("男")
+                .phone("15114818659")
+                .birthday("1989,01.01")
+                .idCardNo("610401199202261215")
+                .modeOfExecution("On").build();
+        LawDocFile lawDocFile01 = LawDocFile.builder()
+                .description("01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称")
+                .fileName("文书名称")
+                .sort(1)
+                .lawNum("5454654645546465")
+                .pageNum("1-2")
+                .build();
+        LawDocFile lawDocFile02 = LawDocFile.builder()
+                .description("01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称")
+                .fileName("文书名称")
+                .sort(2)
+                .lawNum("5454654645546465")
+                .pageNum("3-4")
+                .build();
+        List<LawDocFile> lawDocFiles = new ArrayList<>();
+        lawDocFiles.add(lawDocFile01);
+        lawDocFiles.add(lawDocFile02);
+        List<BaseDataTemplate> infoList = new ArrayList<>();
+        infoList.add(fileRemarks);
+        infoList.add(report);
+
+        try {
+            ByteArrayOutputStream finalReport = PdfFactory.mergePdf(lawDocInfo, lawDocFiles, infoList);
+
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/pdf");
+            response.setCharacterEncoding("utf-8");
+            String fileName = URLEncoder.encode("目录", "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+            finalReport.writeTo(out);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
             e.printStackTrace();
         }
     }

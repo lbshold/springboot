@@ -58,7 +58,7 @@ public class TextPdfUtil {
      * @param tempPath
      * @return
      */
-    public static ByteArrayOutputStream pdfOutPut(FillContent fillContent, String tempPath) throws IOException, DocumentException {
+    public static ByteArrayOutputStream pdfOutPut(FillContent fillContent, String tempPath, float fontSize) throws IOException, DocumentException {
         // 加载模板路径
         ClassPathResource classPathResource = new ClassPathResource(tempPath);
         String templatePath = classPathResource.getPath();
@@ -82,7 +82,7 @@ public class TextPdfUtil {
             form.addSubstitutionFont(bf);
 
             // 填充文字
-            fillContent(fillContent, form);
+            fillContent(fillContent, form, fontSize);
 
             // 填充图片
             fillImage(fillContent, stamper, form);
@@ -136,12 +136,12 @@ public class TextPdfUtil {
         return file;
     }
 
-    private static void fillContent(FillContent fillContent, AcroFields form) throws IOException, DocumentException {
+    private static void fillContent(FillContent fillContent, AcroFields form, float fontSize) throws IOException, DocumentException {
         Map<String, String> contentMap = fillContent.getContentMap();
         for (String key : contentMap.keySet()) {
             String value = contentMap.get(key);
             // 设置字体大小
-            form.setFieldProperty(key, "textsize", 10f, null);
+            form.setFieldProperty(key, "textsize", fontSize, null);
             form.setField(key, value, true);
         }
     }
