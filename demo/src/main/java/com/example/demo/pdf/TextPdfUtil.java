@@ -1,9 +1,6 @@
 package com.example.demo.pdf;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
@@ -15,10 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * generate PDF tools.
+ *
+ * @author: liusj
+ * @date: 2022/5/11
+ */
 public class TextPdfUtil {
 
     /**
-     * 合并PDF
+     * 合并 PDF.
      *
      * @param list
      * @return
@@ -26,6 +29,11 @@ public class TextPdfUtil {
      * @throws DocumentException
      */
     public static ByteArrayOutputStream mergePDF(List<byte[]> list) throws IOException, DocumentException {
+        //中文字符处理
+        ClassPathResource fontResource = new ClassPathResource("templates/simsun.ttc");
+        BaseFont bf = BaseFont.createFont(fontResource.getPath() + ",1", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font font = new Font(bf, 12f, Font.NORMAL);
+
         Document document = null;
         ByteArrayOutputStream out;
         try {
@@ -34,14 +42,26 @@ public class TextPdfUtil {
             PdfCopy pdfCopy = new PdfCopy(document, out);
             document.open();
 
-            for (byte[] bytes : list) {
+            int pageNum = 1;
+            for (int i = 0; i < list.size(); i++) {
+                byte[] bytes = list.get(i);
                 PdfReader pdfReader = new PdfReader(bytes);
                 int numberOfPages = pdfReader.getNumberOfPages();
-                for (int i = 1; i <= numberOfPages; i++) {
+                for (int j = 1; j <= numberOfPages; j++) {
                     document.newPage();
-                    PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, i);
+                    PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, j);
+                    if (i >= 2) { // 排除封页和目录，这里属于定制内容
+                        // 插入页码
+                        PdfCopy.PageStamp stamp = pdfCopy.createPageStamp(importedPage);
+                        ColumnText.showTextAligned(stamp.getUnderContent(),
+                                Element.ALIGN_CENTER,
+                                new Phrase(new Paragraph(String.format("第 %d 页", pageNum), font)), 300f, 25f, 0f);
+                        pageNum++;
+                        stamp.alterContents();//插入页码所需  不要页码可删除
+                    }
                     pdfCopy.addPage(importedPage);
                 }
+                pdfReader.close();
             }
         } finally {
             if (document != null) {
@@ -136,6 +156,15 @@ public class TextPdfUtil {
         return file;
     }
 
+    /**
+     * PDF模板填充内容.
+     *
+     * @param fillContent
+     * @param form
+     * @param fontSize
+     * @throws IOException
+     * @throws DocumentException
+     */
     private static void fillContent(FillContent fillContent, AcroFields form, float fontSize) throws IOException, DocumentException {
         Map<String, String> contentMap = fillContent.getContentMap();
         for (String key : contentMap.keySet()) {
@@ -146,6 +175,15 @@ public class TextPdfUtil {
         }
     }
 
+    /**
+     * PDF模板填充图片.
+     *
+     * @param fillContent
+     * @param stamper
+     * @param form
+     * @throws IOException
+     * @throws DocumentException
+     */
     private static void fillImage(FillContent fillContent, PdfStamper stamper, AcroFields form) throws IOException, DocumentException {
         Map<String, List<File>> imageMap = fillContent.getImageMap();
         if (imageMap != null && imageMap.size() > 0) {

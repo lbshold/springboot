@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 卷宗、单个执法文书PDF生成工厂.
@@ -24,19 +25,32 @@ public class PdfFactory {
 
     private static final String FONT = "templates/simsun.ttc";
     private static final String CATALOG_TITLE = "执法卷宗目录";
+    private static final float FONT_SIZE_01 = 13f;
+    private static final float FONT_SIZE_02 = 10f;
 
+    /**
+     * 合并PDF.
+     *
+     * @param info          卷宗封面数据。
+     * @param lawDocFileLit 目录数据。
+     * @param infoList      文书数据。
+     * @return
+     * @throws IllegalAccessException
+     * @throws IOException
+     * @throws DocumentException
+     */
     public static ByteArrayOutputStream mergePdf(LawDocInfo info, List<LawDocFile> lawDocFileLit, List<BaseDataTemplate> infoList)
             throws IllegalAccessException, IOException, DocumentException {
 
         List<byte[]> docBosList = new ArrayList<>();
 
-        ByteArrayOutputStream infoBos = TextPdfUtil.pdfOutPut(info.generate(), TemplatePathFactory.getTemplatePath(info.getClass()),13f);
-        ByteArrayOutputStream catalogBos = PdfFactory.createCatalog(lawDocFileLit);
+        ByteArrayOutputStream infoBos = PdfFactory.createSinglePdf(info);// 封面
+        ByteArrayOutputStream catalogBos = PdfFactory.createCatalog(lawDocFileLit);// 目录
         docBosList.add(infoBos.toByteArray());
         docBosList.add(catalogBos.toByteArray());
 
         for (BaseDataTemplate infoData : infoList) {
-            ByteArrayOutputStream bos = PdfFactory.createSinglePdf(infoData);
+            ByteArrayOutputStream bos = PdfFactory.createSinglePdf(infoData);// 执法文书
             docBosList.add(bos.toByteArray());
         }
 
@@ -49,17 +63,20 @@ public class PdfFactory {
     public static ByteArrayOutputStream createSinglePdf(BaseDataTemplate baseDataTemplate)
             throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {
         FillContent fillContent = baseDataTemplate.generate();
-        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(baseDataTemplate.getClass()), 10f);
-    }
-
-    public static ByteArrayOutputStream createSinglePdf(LawDocInfo lawDocInfo)
-            throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {
-        FillContent fillContent = lawDocInfo.generate();
-        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(lawDocInfo.getClass()), 13f);
+        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(baseDataTemplate.getClass()), FONT_SIZE_02);
     }
 
     /**
-     * 生成目录.
+     * 根据单个模板生产相应的PDF.
+     */
+    public static ByteArrayOutputStream createSinglePdf(LawDocInfo lawDocInfo)
+            throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {
+        FillContent fillContent = lawDocInfo.generate();
+        return TextPdfUtil.pdfOutPut(fillContent, TemplatePathFactory.getTemplatePath(lawDocInfo.getClass()), FONT_SIZE_01);
+    }
+
+    /**
+     * 生成目录PDF.
      */
     public static ByteArrayOutputStream createCatalog(List<LawDocFile> lawDocFiles) throws DocumentException, IOException {
         // 新建document对象

@@ -82,55 +82,6 @@ public class HelloController {
         }
     }
 
-    @GetMapping("/mergePdf")
-    public void test03(HttpServletResponse response) {
-        try {
-            Map<String, String> dataMap = new HashMap<>();
-            dataMap.put("toggle_2", "On");
-            dataMap.put("fill_1", "2022年5月9日");
-            dataMap.put("fill_2", "名称名称名称名称名称");
-            dataMap.put("fill_3", "2022年5月9日");
-            dataMap.put("fill_4", "名称名称名称名称名称");
-            dataMap.put("fill_15", str);
-            dataMap.put("fill_23", str02);
-            dataMap.put("pageNumber", "1");
-
-            FillContent fillContent = new FillContent();
-            fillContent.setContentMap(dataMap);
-            ByteArrayOutputStream out1 = TextPdfUtil.pdfOutPut(fillContent, REGISTER, 10f);
-
-            dataMap.put("pageNumber", "2");
-            ByteArrayOutputStream out2 = TextPdfUtil.pdfOutPut(fillContent, REGISTER, 10f);
-
-
-            ServletOutputStream out = response.getOutputStream();
-            response.setContentType("application/pdf");
-            response.setCharacterEncoding("utf-8");
-            String fileName = URLEncoder.encode("卷宗", "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
-
-            List<byte[]> list = new ArrayList<>();
-            list.add(out1.toByteArray());
-            list.add(out2.toByteArray());
-
-            ByteArrayOutputStream result = TextPdfUtil.mergePDF(list);
-
-            result.writeTo(out);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.reset();
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-            JSONObject r = new JSONObject();
-            r.put("code", "500");
-            r.put("msg", "导出失败,请重试或联系管理员");
-            try (ServletOutputStream printOut = response.getOutputStream()) {
-                printOut.write(r.toString().getBytes("UTF-8"));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
     @GetMapping("/pdfImage")
     public void test01(HttpServletResponse response) {
