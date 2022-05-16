@@ -50,14 +50,14 @@ public class TextPdfUtil {
                 for (int j = 1; j <= numberOfPages; j++) {
                     document.newPage();
                     PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, j);
+                    // 插入页码
                     if (i >= 2) { // 排除封页和目录，这里属于定制内容
-                        // 插入页码
                         PdfCopy.PageStamp stamp = pdfCopy.createPageStamp(importedPage);
                         ColumnText.showTextAligned(stamp.getUnderContent(),
                                 Element.ALIGN_CENTER,
                                 new Phrase(new Paragraph(String.format("第 %d 页", pageNum), font)), 300f, 25f, 0f);
                         pageNum++;
-                        stamp.alterContents();//插入页码所需  不要页码可删除
+                        stamp.alterContents();
                     }
                     pdfCopy.addPage(importedPage);
                 }
