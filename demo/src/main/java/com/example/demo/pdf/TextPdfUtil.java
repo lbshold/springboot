@@ -159,17 +159,22 @@ public class TextPdfUtil {
     /**
      * url 转 ByteArrayOutputStream.
      */
-    public static ByteArrayOutputStream getBosFromUrl(String url) throws IOException {
-        URL urlPdf =new URL(url);
-        InputStream bis = urlPdf.openStream();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+    public static ByteArrayOutputStream getBosFromUrl(String url) {
+        ByteArrayOutputStream bos = null;
+        try {
+            URL urlPdf = new URL(url);
+            InputStream bis = urlPdf.openStream();
+            bos = new ByteArrayOutputStream(1024);
 
-        byte[] temp = new byte[2048];
-        int size = 0;
-        while ((size = bis.read(temp)) != -1) {
-            bos.write(temp, 0, size);
+            byte[] temp = new byte[2048];
+            int size = 0;
+            while ((size = bis.read(temp)) != -1) {
+                bos.write(temp, 0, size);
+            }
+            bis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        bis.close();
         return bos;
     }
 
