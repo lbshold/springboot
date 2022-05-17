@@ -6,6 +6,7 @@ import com.example.demo.lawdoc.entity.*;
 import com.example.demo.pdf.FillContent;
 import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.DocumentException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -164,10 +165,10 @@ public class HelloController {
             ByteArrayOutputStream bos = PdfFactory.createSinglePdf(info);
 
             ServletOutputStream out = response.getOutputStream();
-            response.setContentType("application/pdf");
-            response.setCharacterEncoding("utf-8");
-            String fileName = URLEncoder.encode("PDF", "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+//            response.setContentType("application/pdf");
+//            response.setCharacterEncoding("utf-8");
+//            String fileName = URLEncoder.encode("PDF", "UTF-8");
+//            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
             bos.writeTo(out);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -250,11 +251,19 @@ public class HelloController {
                 .lawNum("5454654645546465")
                 .pageNum("3-4")
                 .build();
+        LawDocFile lawDocFile03 = LawDocFile.builder()
+                .description("01加名称名称加名称02加名称名称加名称03加名称名称加名称03加名称名称加名称05加名称名称加名称")
+                .fileName("文书名称")
+                .sort(2)
+                .lawNum("5454654645546465")
+                .pageNum("3-4")
+                .build();
         List<LawDocFile> lawDocFiles = new ArrayList<>();
         lawDocFiles.add(lawDocFile01);
         lawDocFiles.add(lawDocFile02);
         List<BaseDataTemplate> infoList = new ArrayList<>();
         infoList.add(fileRemarks);
+        report.setImportFilePdf("http://192.168.2.223/file_api/group1/M00/00/3E/wKgC4WKDDs6AP0rsAAL9BjKQC68811.pdf");
         infoList.add(report);
 
         try {

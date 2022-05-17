@@ -8,6 +8,7 @@ import com.example.demo.pdf.TextPdfUtil;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,8 +50,13 @@ public class PdfFactory {
         docBosList.add(catalogBos.toByteArray());
 
         for (BaseDataTemplate infoData : infoList) {
-            ByteArrayOutputStream bos = PdfFactory.createSinglePdf(infoData);// 执法文书
-            docBosList.add(bos.toByteArray());
+            if (!StringUtils.isEmpty(infoData.getImportFilePdf())) {
+                ByteArrayOutputStream bos = TextPdfUtil.getBosFromUrl(infoData.getImportFilePdf());// 导入执法文书
+                docBosList.add(bos.toByteArray());
+            } else {
+                ByteArrayOutputStream bos = PdfFactory.createSinglePdf(infoData);// 执法文书
+                docBosList.add(bos.toByteArray());
+            }
         }
 
         return TextPdfUtil.mergePDF(docBosList);
@@ -66,7 +72,7 @@ public class PdfFactory {
     }
 
     /**
-     * 根据单个模板生产相应的PDF.
+     * 根据单个模板生产相应的PDF-封面.
      */
     public static ByteArrayOutputStream createSinglePdf(LawDocInfo lawDocInfo)
             throws IllegalAccessException, IllegalArgumentException, IOException, DocumentException {

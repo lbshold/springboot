@@ -29,6 +29,9 @@ public class BaseDataTemplate implements Serializable {
     @ApiModelProperty(value="文书名称")
     private String lawDocFileName;
 
+    @ApiModelProperty(value = "导入模板路径")
+    private String importFilePdf;
+
     public FillContent generate() throws IllegalAccessException, IllegalArgumentException {
         Class<? extends BaseDataTemplate> aClass = this.getClass();
         Map<String, String> contentMap = new HashMap<>();
