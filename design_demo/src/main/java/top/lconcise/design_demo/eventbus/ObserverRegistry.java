@@ -20,7 +20,8 @@ public class ObserverRegistry {
         for (Map.Entry<Class<?>, Collection<ObserverAction>> entry : observerAction.entrySet()) {
             Class<?> eventType = entry.getKey();
             Collection<ObserverAction> eventActions = entry.getValue();
-            CopyOnWriteArraySet<ObserverAction> observerActions = registry.putIfAbsent(eventType, new CopyOnWriteArraySet<ObserverAction>());
+            CopyOnWriteArraySet<ObserverAction> observerActions = registry.computeIfAbsent(eventType,
+                    e -> new CopyOnWriteArraySet<ObserverAction>());
             observerActions.addAll(eventActions);
         }
     }
@@ -30,7 +31,7 @@ public class ObserverRegistry {
         Class<?> postedEventType = event.getClass();
         for (Map.Entry<Class<?>, CopyOnWriteArraySet<ObserverAction>> entry : registry.entrySet()) {
             Class<?> eventType = entry.getKey();
-            if (postedEventType.isAssignableFrom(eventType)) {
+            if (eventType.isAssignableFrom(postedEventType)) {
                 matchedObservers.addAll(entry.getValue());
             }
         }
