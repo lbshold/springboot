@@ -34,9 +34,7 @@ public class DemoUserService {
         // 注册用户。。。
         Long userId = 1L; // 注册返回用户id
 
-        DemoEntity entity = new DemoEntity("", "");
-//        eventBus.post(userId);
-        eventBus.post(entity);
+        eventBus.post(userId);
 
         return userId;
     }
